@@ -1,0 +1,9 @@
+/node_modules
+.eslintcache
+/dist
+.vscode
+**/*.env
+/data
+/coverage
+/.nyc_output
+/migration

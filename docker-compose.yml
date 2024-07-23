@@ -1,0 +1,34 @@
+version: '3'
+services:
+  # mongo service
+  mongo:
+    container_name: mongo-db
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    volumes:
+      - bridges_datavol:/data
+  
+  # redis service
+  redis:
+    container_name: con_redis
+    ports:
+      - 6379:6379
+    image: redis
+    volumes:
+      - bridges_datavol:/var/lib/redis
+
+  #backend service
+  backend-service: 
+    container_name: aleph_foresight_backend
+    network_mode: "host"
+    build: 
+      context: .
+    restart: always
+    # disable port binding disable in host mode
+    # ports:
+    #   - 7001:7001
+    
+volumes:
+  bridges_datavol:

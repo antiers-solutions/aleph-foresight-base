@@ -1,0 +1,1193 @@
+import mongoose, { Model, PipelineStage } from 'mongoose';
+import { DATA_MODELS, UNDEFINED } from '../constants';
+import modelsObejct from '../models/index';
+import { log } from '../utils/helper.utils';
+import { ERROR_MESSAGE } from '../constants/mongo.data.constant';
+//mongodb curd helper
+class MongoDataHelper {
+   static instance: MongoDataHelper = null;
+
+   static getInstance = () => {
+      if (!MongoDataHelper.instance) {
+         MongoDataHelper.instance = new MongoDataHelper();
+         delete MongoDataHelper.constructor;
+      }
+      return MongoDataHelper.instance;
+   };
+   // Helper function to filter and count details
+
+   /**
+    * get the total document count stored in choosen collection
+    * @param name
+    * @param query
+    * @returns
+    */
+   public getCount = async (name: string, query?: any) => {
+      try {
+         this._checkModel(name);
+
+         if (query) {
+            // gets count of the number present in the db based on the query
+            const result = await this._getModel(name).find(query).count();
+            return result;
+         } else {
+            // gets count of all the data present in the db collection
+            const result = await this._getModel(name)?.count();
+            return result;
+         }
+      } catch (err) {
+         log.red(ERROR_MESSAGE.GET_COUNT_ERR, err);
+         return 0;
+      }
+   };
+
+   /**
+    * save the single data object
+    * @param name
+    * @param data
+    * @returns
+    */
+   public saveData = async (name: string, data: object) => {
+      try {
+         this._checkModel(name);
+         const Model = this._getModel(name);
+         const DataObject = new Model(data);
+         const result = await DataObject.save();
+         return result;
+      } catch (error) {
+         console.log('error:', error);
+         return null;
+      }
+   };
+   /**
+    * save the data into bulk
+    * @param name
+    * @param data
+    * @returns
+    */
+   public findOne = async (name: string, query: any) => {
+      try {
+         this._checkModel(name);
+         const Model = this._getModel(name);
+         // inserts multiple data in the db collection at a specific time
+         const result = await Model.findOne(query);
+         return result;
+      } catch (err) {
+         log.red(ERROR_MESSAGE.FIND_ONE_ERR, err.message);
+         return null;
+      }
+   };
+   /**
+    * Fetches all documents from a specified MongoDB collection.
+    * @param name The name of the collection.
+    * @param query The query object to filter documents.
+    * @param sort The sort object to sort the documents.
+    * @param skip The number of documents to skip.
+    * @param limit The maximum number of documents to return.
+    * @returns A promise that resolves to an array of documents, or null in case of an error.
+    */
+   public findAll = async (
+      name: string,
+      query: object,
+      sort: any = {},
+      skip?: number,
+      limit?: number
+   ) => {
+      try {
+         this._checkModel(name);
+         const Model = this._getModel(name);
+         const results = await Model.find(query)
+            .sort(sort)
+            .skip(skip)
+            .limit(limit)
+            .exec();
+         return results;
+      } catch (err) {
+         log.red(ERROR_MESSAGE.FIND_ALL_ERR, err.message);
+         return null;
+      }
+   };
+   public findAllResultEvents = async (
+      name: string,
+      query: any,
+      sort: any = {}
+   ) => {
+      try {
+         this._checkModel(name);
+         const Model = this._getModel(name);
+         const pipeline = [
+            {
+               $match: {
+                  userId: query.userId,
+                  status: 2, // Match status 0 in the event collection
+               },
+            },
+            {
+               $lookup: {
+                  from: 'orders', // Collection name to join
+                  localField: 'eventId', // Field from the current collection
+                  foreignField: 'eventId', // Field from the "order" collection
+                  as: 'ordersDetails', // Alias for joined data
+               },
+            },
+            {
+               $match: {
+                  'ordersDetails.userId': { $exists: true, $ne: null },
+               },
+            },
+            {
+               $lookup: {
+                  from: 'disputes', // Collection name to join
+                  let: { eventId: '$eventId', userId: '$userId' }, // Variables to join on
+                  pipeline: [
+                     {
+                        $match: {
+                           $expr: {
+                              $and: [
+                                 { $eq: ['$eventId', '$$eventId'] },
+                                 { $eq: ['$userId', '$$userId'] },
+                              ],
+                           },
+                        },
+                     },
+                  ],
+                  as: 'disputeDetails', // Alias for joined data
+               },
+            },
+            {
+               $match: {
+                  disputeDetails: { $eq: [] }, // Ensure no disputes match
+               },
+            },
+            {
+               $project: {
+                  eventId: 1,
+                  userId: 1,
+                  targetDateTime: 1,
+                  betClouserTime: 1,
+                  eventDuration: 1,
+                  eventExpireTime: 1,
+                  eventResultTime: 1,
+                  createdAt: 1,
+                  updatedAt: 1,
+                  'ordersDetails.amount': 1,
+                  'ordersDetails.updatedAt': 1,
+               },
+            },
+         ];
+         const results = await Model.aggregate(pipeline).sort(sort).exec();
+         return results;
+      } catch (err) {
+         log.red('Error while fetching data:\n', err.message);
+         return null;
+      }
+   };
+   public findPrice = async (name: string, query: object) => {
+      try {
+         this._checkModel(name);
+         const Model = this._getModel(name);
+         const results = await Model.findOne(query).select(
+            'name symbol precision price'
+         );
+         return results;
+      } catch (err) {
+         log.red(ERROR_MESSAGE.FIND_ALL_ERR, err.message);
+         return null;
+      }
+   };
+   public findAllEvent = async (
+      name: string,
+      query: object,
+      filter?:string,
+      sort: any = {},
+      skip?: number,
+      limit?: number,
+      search?: string
+   ) => {
+      try {
+         this._checkModel(name);
+         const Model = this._getModel(name);
+         let matchQuery = { status: 1, ...query };
+         if (filter == 'volume') {
+            let matchData = {
+               'orderDetails.bidType':{
+                  $ne: 'withdraw',
+               },
+            }
+            matchQuery = { ...matchQuery, ...matchData}
+         } else {
+            matchQuery = { ...matchQuery }
+         }
+         const pipeline: PipelineStage[] = [
+            { $match: matchQuery },
+            {
+               $lookup: {
+                  from: 'currencies', // Collection name to join
+                  localField: 'currencyType', // Field from Orders collection
+                  foreignField: 'symbol', // Field from userDetails collection
+                  as: 'currencyDetails', // Alias for joined data
+               },
+            },
+            {
+               $lookup: {
+                  from: 'orders',
+                  localField: 'eventId',
+                  foreignField: 'eventId',
+                  as: 'orderDetails',
+               },
+            },
+            {
+               $match: matchQuery
+            },
+            {
+               $addFields: {
+                  totalVolume: { $sum: '$orderDetails.currentBet' },
+               },
+            },
+            {
+               $unwind: '$currencyDetails',
+            },
+            ...(search !== undefined &&
+            search.trim() !== '' &&
+            search !== UNDEFINED
+               ? [
+                    {
+                       $match: {
+                          $or: [
+                             {
+                                'currencyDetails.name': {
+                                   $regex: `${search}`,
+                                   $options: 'i',
+                                },
+                             },
+                             {
+                                'currencyDetails.symbol': {
+                                   $regex: `${search}`,
+                                   $options: 'i',
+                                },
+                             },
+                          ],
+                       },
+                    },
+                 ]
+               : []),
+            {
+               $addFields: {
+                  convertedDate: {
+                     $toDate: '$eventExpireTime',
+                  },
+                  currentPrice: {
+                     $toDouble: '$currencyDetails.price',
+                  },
+               },
+            },
+            { $sort: sort },
+            {
+               $project: {
+                  _id: 0,
+                  currencyDetails: 0,
+                  orderDetails: 0,
+               },
+            },
+         ];
+         const total = await Model.aggregate(pipeline).count(name).exec();
+         const results = await Model.aggregate(pipeline)
+            .sort(sort)
+            .skip(skip)
+            .limit(limit)
+            .exec();
+         const formattedResults = {
+            eventsData: results,
+            total: total[0].Events, // Total count of events
+         };
+         return formattedResults;
+      } catch (err) {
+         log.red(ERROR_MESSAGE.FIND_ALL_ERR, err.message);
+         return null;
+      }
+   };
+   public findAllNoBet = async (
+      name: string,
+      query: object,
+      sort: any = {},
+      skip?: number,
+      limit?: number
+   ) => {
+      try {
+         this._checkModel(name);
+         const Model = this._getModel(name);
+         //Aggregation pipeline
+         const pipeline = [
+            { $match: query },
+            {
+               $lookup: {
+                  from: 'orders', // Collection name to join
+                  localField: 'eventId', // Field from Orders collection
+                  foreignField: 'eventId', // Field from userDetails collection
+                  as: 'userDetails', // Alias for joined data
+               },
+            },
+         ];
+         const total = await Model.aggregate(pipeline).count(name).exec();
+         const results = await Model.aggregate(pipeline)
+            .sort(sort)
+            .skip(skip)
+            .limit(limit)
+            .exec();
+         results.map((item) => {
+            item.userDetails = item.userDetails.filter((order) => {
+               return order.eventId.toLowerCase() == item.eventId.toLowerCase();
+            });
+            let volume: number = 0;
+            item.userDetails.forEach((item) => {
+               volume += Number(item.amount);
+            });
+            item.noOfBets = item.userDetails.length;
+            item.volume = volume;
+            return item;
+         });
+         const formattedResults = {
+            eventsData: results,
+            total: total[0].Events, // Total count of events
+         };
+         return formattedResults;
+      } catch (err) {
+         log.red(ERROR_MESSAGE.FIND_ALL_ERR, err.message);
+         return null;
+      }
+   };
+
+   public findAllOrdersUser = async (
+      name: string,
+      query: object,
+      sort: any = {},
+      skip?: number,
+      limit?: number
+   ) => {
+      try {
+         this._checkModel(name);
+         const Model = this._getModel(name);
+         //Aggregation pipeline
+         const pipeline = [
+            { $match: query },
+            {
+               $lookup: {
+                  from: 'users', // Collection name to join
+                  localField: 'walletAddress', // Field from Orders collection
+                  foreignField: 'userId', // Field from userDetails collection
+                  as: 'userDetails', // Alias for joined data
+               },
+            },
+            {
+               $lookup: {
+                  from: 'events', // Collection name to join
+                  localField: 'eventId', // Field from Orders collection
+                  foreignField: 'eventId', // Field from userDetails collection
+                  as: 'targetDateTime', // Alias for joined data
+               },
+            },
+            {
+            $addFields:{
+               priceLevel:"$targetDateTime.priceLevel",
+               crrencyType:"$targetDateTime.crrencyType"
+            }
+            }
+         ];
+
+         const total = await Model.aggregate(pipeline).count(name).exec();
+         const results = await Model.aggregate(pipeline)
+            .sort(sort)
+            .skip(skip)
+            .limit(limit)
+            .exec();
+         results.map((item) => {
+            const userDetails = item.userDetails.filter(
+               (user) => {
+                  return (
+                     user.walletAddress.toLowerCase() ==
+                     item.userId.toLowerCase()
+                  );
+               }
+            )[0];
+            item.userDetails = userDetails;
+         });
+         results.map((item) => {
+            item.targetDateTime = item.targetDateTime.filter((event) => {
+               return event.userId.toLowerCase() == item.userId.toLowerCase();
+            })[0]?.targetDateTime;
+         });
+         const formattedResults = {
+            ordersData: results,
+            total: total[0].Order,
+         };
+         return formattedResults;
+      } catch (err) {
+         log.red(ERROR_MESSAGE.FIND_ALL_ERR, err.message);
+         return null;
+      }
+   };
+   public findAllClosedPosition = async (
+      name: string,
+      query: any,
+      skip?: number,
+      limit?: number,
+      statusType?: number
+   ) => {
+      try {
+         this._checkModel(name);
+         const Model = this._getModel(name);
+         //Aggregation pipeline
+         let matchData:object = {};
+         if (statusType === 1) {
+            matchData = { $in: [1, 3] };
+         } else {
+            matchData = { $in: [0, 2, 4] };
+         }
+         const pipeline: PipelineStage[] = [
+            {
+               $facet: {
+                  eventTrue: [
+                     {
+                        $lookup: {
+                           from: 'events',
+                           localField: 'eventId',
+                           foreignField: 'eventId',
+                           as: 'eventDetail',
+                        },
+                     },
+                     {
+                        $match: {
+                           bidType: 'true',
+                           'eventDetail.status': matchData,
+                           userId: query.userId,
+                           result:statusType==1 ? null:{$in:[null,1]}
+                        },
+                     },
+                     {
+                        $set: {
+                           'eventStatus': {
+                              $first: '$eventDetail.status',
+                           },
+                        },
+                     },
+                     { $unset: 'eventDetail' },
+                     {
+                        $group: {
+                           _id: '$eventId',
+                           latestOrder: { $last: '$$ROOT' },
+                        },
+                     },
+                     {
+                        $replaceRoot: {
+                           newRoot: '$latestOrder',
+                        },
+                     },
+                  ],
+                  eventFalse: [
+                     {
+                        $lookup: {
+                           from: 'events',
+                           localField: 'eventId',
+                           foreignField: 'eventId',
+                           as: 'eventDetail',
+                        },
+                     },
+                     {
+                        $match: {
+                           bidType: 'false',
+                           'eventDetail.status': matchData,
+                           userId: query.userId,
+                           result:statusType==1 ? null:{$in:[null,1]}
+                        },
+                     },
+                     {
+                        $set: {
+                           'eventStatus': {
+                              $first: '$eventDetail.status',
+                           },
+                        },
+                     },
+                     { $unset: 'eventDetail' },
+                     {
+                        $group: {
+                           _id: '$eventId',
+                           latestOrder: { $last: '$$ROOT' },
+                        },
+                     },
+                     {
+                        $replaceRoot: {
+                           newRoot: '$latestOrder',
+                        },
+                     },
+                  ],
+               },
+            },
+            {
+               $project: {
+                  data: {
+                     $concatArrays: ['$eventTrue', '$eventFalse'],
+                  },
+               },
+            },
+            { $unwind: '$data' },
+            { $sort: { 'data.createdAt': -1 } },
+            {
+               $group: {
+                  _id: null,
+                  data: { $push: '$data' },
+               },
+            },
+            {
+               $project: {
+                  _id: 0,
+                  data: 1,
+               },
+            },
+            { $unwind: '$data' },
+         ];
+         const total = await Model.aggregate(pipeline).count(name).exec();
+         const results = await Model.aggregate(pipeline)
+            .skip(skip)
+            .limit(limit)
+            .exec();
+         const formattedResults = {
+            ordersData: results,
+            total: total[0].Order, // Total count of events
+         };
+         return formattedResults;
+      } catch (err) {
+         log.red(ERROR_MESSAGE.FIND_ALL_ERR, err.message);
+         return null;
+      }
+   };
+   public findEventPrice = async (name: string, query: object) => {
+      try {
+         this._checkModel(name);
+         const Model = this._getModel(name);
+         //Aggregation pipeline
+         const pipeline = [
+            { $match: query },
+            {
+               $lookup: {
+                  from: 'currencies', // Collection name to join
+                  localField: 'currencyType', // Field from Orders collection
+                  foreignField: 'symbol', // Field from userDetails collection
+                  as: 'currencyDetails', // Alias for joined data
+               },
+            },
+            {
+               $lookup: {
+                  from: 'orders',
+                  localField: 'eventId',
+                  foreignField: 'eventId',
+                  as: 'matchingOrders',
+               },
+            },
+            {
+               $unwind: '$currencyDetails', // Flatten the array of joined documents
+            },
+            {
+               $addFields: {
+                  priceDifference: {
+                     $cond: {
+                        if: { $gte: ['$currencyDetails.price', '$priceLevel'] },
+                        then: {
+                           $subtract: ['$currencyDetails.price', '$priceLevel'],
+                        },
+                        else: {
+                           $subtract: ['$priceLevel', '$currencyDetails.price'],
+                        },
+                     },
+                  },
+                  sign: {
+                     $cond: {
+                        if: { $gte: ['$currencyDetails.price', '$priceLevel'] },
+                        then: 'positive',
+                        else: 'negative',
+                     },
+                  },
+                  totalNoOfBet: { $size: '$matchingOrders' },
+               },
+            },
+            {
+               $addFields: {
+                  percentageDifference: {
+                     $multiply: [
+                        {
+                           $divide: ['$priceDifference', '$priceLevel'],
+                        },
+                        100,
+                     ],
+                  },
+               },
+            },
+            {
+               $project: {
+                  eventId: 1,
+                  txnId: 1,
+                  userId: 1,
+                  currencyType: 1,
+                  priceLevel: 1,
+                  targetDateTime: 1,
+                  bettingClosureTime: 1,
+                  eventDuration: 1,
+                  resolutionSource: 1,
+                  resolver: 1,
+                  status: 1,
+                  eventExpireTime: 1,
+                  eventResultTime: 1,
+                  createdAt: 1,
+                  updatedAt: 1,
+                  'currencyDetails.price': 1, // Include the price from the Currency collection
+                  'currencyDetails.precision': 1,
+                  'currencyDetails.symbol': 1,
+                  'currencyDetails.name': 1,
+                  percentage: 1,
+                  sign: 1,
+                  totalNoOfBet: 1,
+                  percentageDifference: 1,
+               },
+            },
+         ];
+         const results = await Model.aggregate(pipeline).exec();
+         return results;
+      } catch (err) {
+         log.red(ERROR_MESSAGE.FIND_ALL_ERR, err.message);
+         return null;
+      }
+   };
+
+   public findAllClosedPositionAdmin = async (
+      name: string,
+      query?: any,
+      status?: number,
+      sort: any = {},
+      skip?: number,
+      limit?: number
+   ) => {
+      try {
+         this._checkModel(name);
+         const Model = this._getModel(name);
+         //Aggregation pipeline
+         let matchData:object = {};
+         if (!isNaN(status)) {
+            if (status === 1) {
+               matchData = {
+                  $or: [{ status: 1 }, { status: 3 }],
+               };
+            } else {
+               matchData = {
+                  $or: [{ status: 0 }, { status: 2 }],
+               };
+            }
+         }
+         const pipeline = [
+            { $match: query },
+            {
+               $match: matchData,
+            },
+            {
+               $lookup: {
+                  from: 'orders', // Collection name to join
+                  localField: 'eventId', // Field from Orders collection
+                  foreignField: 'eventId', // Field from userDetails collection
+                  as: 'closedPosition', // Alias for joined data
+               },
+            },
+            {
+               $project: {
+                  eventId: '$eventId',
+                  txnId: '$txnId',
+                  status: '$status',
+                  targetDateTime: '$targetDateTime',
+                  createdAt: '$createdAt',
+                  updatedAt: '$updatedAt',
+                  totalAmount: { $sum: '$closedPosition.amount' },
+                  transactionCount: { $size: '$closedPosition' },
+               },
+            },
+         ];
+         const total = await Model.aggregate(pipeline).count(name).exec();
+         const results = await Model.aggregate(pipeline)
+            .sort(sort)
+            .skip(skip)
+            .limit(limit)
+            .exec();
+         // Format results to match the specified structure
+         const formattedResults = {
+            ordersData: results,
+            total: total[0].Events, // Total count of events
+         };
+         return formattedResults;
+      } catch (err) {
+         log.red(ERROR_MESSAGE.FIND_ALL_ERR, err.message);
+         return null;
+      }
+   };
+   public findAllDispute = async (
+      name: string,
+      sort: any = {},
+      skip?: number,
+      limit?: number
+   ) => {
+      try {
+         this._checkModel(name);
+         const Model = this._getModel(name);
+         //Aggregation pipeline
+         const pipeline = [
+            {
+               $lookup: {
+                  from: 'events', // Collection name to join
+                  localField: 'eventId', // Field from Orders collection
+                  foreignField: 'eventId', // Field from userDetails collection
+                  as: 'disputeRaise', // Alias for joined data
+               },
+            },
+            {
+               $project: {
+                  eventId: '$eventId',
+                  userId: '$userId',
+                  category: '$category',
+                  description: '$description',
+                  evidenceUrl: '$evidenceUrl',
+                  createdAt: '$createdAt',
+                  status: '$status',
+                  updatedAt: '$updatedAt',
+                  targetDateTime: '$disputeRaise.targetDateTime',
+               },
+            },
+         ];
+         const total = await Model.aggregate(pipeline).count(name).exec();
+         const results = await Model.aggregate(pipeline)
+            .sort(sort)
+            .skip(skip)
+            .limit(limit)
+            .exec();
+         const formattedResults = {
+            disputeData: results,
+            total: total[0].Dispute, // Total count of events
+         };
+         // Format results to match the specified structure
+         return formattedResults;
+      } catch (err) {
+         log.red(ERROR_MESSAGE.FIND_ALL_ERR, err.message);
+         return null;
+      }
+   };
+   public findSumNetPosition = async (
+      name: string,
+      query: object,
+      result: number
+   ) => {
+      try {
+         this._checkModel(name);
+         const Model = this._getModel(name);
+   
+         if (result === 1) {
+            // Calculate totalAmountClaimed and totalAmount1 for result = 1 where amountClaimed exists
+            const totalResults = await Model.aggregate([
+               { $match: { ...query, amountClaimed: { $exists: true }} },
+               { 
+                  $group: { 
+                     _id: null, 
+                     totalAmountClaimed: { $sum: "$amountClaimed" },
+                     totalAmount1: { $sum: "$amount" }
+                  } 
+               }
+            ]);
+   
+            const totalAmountClaimed = totalResults.length > 0 ? totalResults[0].totalAmountClaimed : 0;
+            const totalAmount1 = totalResults.length > 0 ? totalResults[0].totalAmount1 : 0;
+   
+            return { totalAmountClaimed, totalAmount1 };
+   
+         } else if (result === 0) {
+            // Sum amount2 for result = 0 and exclude bidType = "withdraw"
+            const amount2Results = await Model.aggregate([
+               { $match: { ...query, result: 0, bidType: { $ne: "withdraw" } } },
+               { 
+                  $group: { 
+                     _id: null, 
+                     totalAmount2: { $sum: "$amount" } 
+                  } 
+               }
+            ]);
+   
+            const totalAmount2 = amount2Results.length > 0 ? amount2Results[0].totalAmount2 : 0;
+            return { totalAmount2 };
+         }
+   
+         return null;
+   
+      } catch (err) {
+         log.red(ERROR_MESSAGE.FIND_ALL_ERR, err.message);
+         return null;
+      }
+   };
+   public findAllUserAdmin = async (
+      name: string,
+      query: object,
+      sort: any = {},
+      skip?: number,
+      limit?: number
+   ) => {
+      try {
+         this._checkModel(name);
+         const Model = this._getModel(name);
+         //Aggregation pipeline
+         const pipeline = [
+            { $match: query },
+            {
+               $lookup: {
+                  from: 'orders', // Collection name to join
+                  localField: 'userId', // Field from current collection
+                  foreignField: 'walletAddress', // Field from orders collection
+                  as: 'userDetails', // Alias for joined data
+               },
+            },
+            {
+               $lookup: {
+                  from: 'disputes', // Collection name to join
+                  localField: 'userId', // Field from current collection
+                  foreignField: 'walletAddress', // Field from disputes collection
+                  as: 'disputeDetails', // Alias for joined data
+               },
+            },
+            {
+               $addFields: {
+                  userDetails: {
+                     $filter: {
+                        input: '$userDetails',
+                        as: 'detail',
+                        cond: {
+                           $eq: [
+                              { $toLower: '$$detail.userId' },
+                              { $toLower: '$walletAddress' },
+                           ],
+                        },
+                     },
+                  },
+                  disputeDetails: {
+                     $filter: {
+                        input: '$disputeDetails',
+                        as: 'detail',
+                        cond: {
+                           $eq: [
+                              { $toLower: '$$detail.userId' },
+                              { $toLower: '$walletAddress' },
+                           ],
+                        },
+                     },
+                  },
+               },
+            },
+            {
+               $addFields: {
+                  noOfBets: { $size: '$userDetails' },
+                  noOfDisputes: { $size: '$disputeDetails' },
+               },
+            },
+            {
+               $project: {
+                  userDetails: 0,
+                  disputeDetails: 0,
+               },
+            },
+         ];
+         const total = await Model.count({});
+         const results = await Model.aggregate(pipeline)
+            .sort(sort)
+            .skip(skip)
+            .limit(limit)
+            .exec();
+         const formattedResults = {
+            users: results,
+            total: total, // Total count of events
+         };
+         return formattedResults;
+      } catch (err) {
+         log.red(ERROR_MESSAGE.FIND_ALL_ERR, err.message);
+         return null;
+      }
+   };
+   public findAllAdminEventCreators = async (
+      name: string,
+      query: object,
+      sort: any = {},
+      skip?: number,
+      limit?: number
+   ) => {
+      try {
+         this._checkModel(name);
+         const Model = this._getModel(name);
+         //Aggregation pipeline
+         const pipeline = [
+            { $match: query },
+            {
+               $lookup: {
+                  from: 'events', // Collection name to join
+                  localField: 'userId', // Field from the current collection
+                  foreignField: 'walletAddress', // Field from the events collection
+                  as: 'userDetails', // Alias for joined data
+               },
+            },
+            {
+               $addFields: {
+                  userDetails: {
+                     $filter: {
+                        input: '$userDetails',
+                        as: 'user',
+                        cond: {
+                           $eq: [
+                              { $toLower: '$$user.userId' },
+                              { $toLower: '$walletAddress' },
+                           ],
+                        },
+                     },
+                  },
+               },
+            },
+            {
+               $addFields: {
+                  noOfEvents: { $size: '$userDetails' },
+               },
+            },
+            {
+               $match: { 'userDetails.0': { $exists: true } }, // Filters out documents where userDetails is empty
+            },
+         ];
+         const total = await Model.aggregate(pipeline).count(name).exec();
+         const results = await Model.aggregate(pipeline)
+            .sort(sort)
+            .skip(skip)
+            .limit(limit)
+            .exec();
+         const formattedResults = {
+            users: results,
+            total: total[0].User, // Total count of event creator
+         };
+         return formattedResults;
+      } catch (err) {
+         log.red(ERROR_MESSAGE.FIND_ALL_ERR, err.message);
+         return null;
+      }
+   };
+   // public findTotalEventCreators = async (name: string, query: object) => {
+   //    try {
+   //       this._checkModel(name);
+   //       const Model = this._getModel(name);
+   //       //Aggregation pipeline
+   //       const pipeline = [
+   //          { $match: query },
+   //          {
+   //             $lookup: {
+   //                from: 'events', // Collection name to join
+   //                localField: 'userId', // Field from Orders collection
+   //                foreignField: 'walletAddress', // Field from userDetails collection
+   //                as: 'userDetails', // Alias for joined data
+   //             },
+   //          },
+   //       ];
+   //       const results = await Model.aggregate(pipeline).exec();
+   //       results.map((item) => {
+   //          item.userDetails = item.userDetails.filter((user) => {
+   //             return (
+   //                user.userId.toLowerCase() == item.walletAddress.toLowerCase()
+   //             );
+   //          });
+   //          item.noOfEvents = item.userDetails.length;
+   //          return item;
+   //       });
+   //       return results;
+   //    } catch (err) {
+   //       log.red(ERROR_MESSAGE.FIND_ALL_ERR, err.message);
+   //       return null;
+   //    }
+   // };
+   public findTotalEventCreators = async (name: string, query: object) => {
+      try {
+         this._checkModel(name);
+         const Model = this._getModel(name);
+         const pipeline = [
+            { $match: query },
+            {
+               $group: {
+                  _id: '$userId',
+                  count: { $sum: 1 },
+               },
+            },
+         ];
+         const results = await Model.aggregate(pipeline).exec();
+         return results;
+      } catch (err) {
+         log.red(ERROR_MESSAGE.FIND_ALL_ERR, err.message);
+         return null;
+      }
+   };
+   public findAllEventTraded = async (name: string, query: any) => {
+      try {
+         this._checkModel(name);
+         const Model = this._getModel(name);
+         const results = await Model.aggregate([
+            { $match: query },
+            {
+               $group: {
+                  _id: '$eventId', // Group by eventId
+               },
+            },
+            {
+               $count: 'uniqueEventCount', // Count the unique eventIds
+            },
+         ]);
+         return results[0].uniqueEventCount;
+      } catch (err) {
+         log.red(ERROR_MESSAGE.FIND_ALL_ERR, err.message);
+         return null;
+      }
+   };
+   public findAllSum = async (name: string, query: any) => {
+      try {
+         this._checkModel(name);
+         const Model = this._getModel(name);
+         const results = await Model.aggregate([
+            { $match: query },
+            { $group: { _id: null, totalAmount: { $sum: '$amount' } } },
+         ]);
+         const volumeTraded = results.length > 0 ? results[0].totalAmount : 0;
+         return { volumeTraded };
+      } catch (err) {
+         log.red(ERROR_MESSAGE.FIND_ALL_ERR, err.message);
+         return null;
+      }
+   };
+   /**
+    * this helper is use to fetch data according to the query provided
+    * @param name
+    * @param query
+    * @returns
+    */
+   public findAndQueryData = async (name: string, query: any) => {
+      try {
+         this._checkModel(name);
+         const result = await this._getModel(name).find(query);
+         return result;
+      } catch (error) {
+         return null;
+      }
+   };
+
+   /**
+    * if data found then this function will update that data otherwise insert that data
+    * @param name
+    * @param filter
+    * @param data
+    * @returns
+    */
+   public findOneAndUpdate = async (
+      name: string,
+      filter: unknown,
+      data: unknown
+   ) => {
+      try {
+         this._checkModel(name);
+
+         // updated the data in the db collection based on the query provided
+         const result = await this._getModel(name).findOneAndUpdate(
+            filter,
+            data,
+            {
+               new: true,
+               upsert: true,
+            }
+         );
+         return result;
+      } catch (error) {
+         return null;
+      }
+   };
+   /**
+    * this helper is use to remove  data field in a collection of mongodb
+    * @param name
+    * @param deleteObj
+    * @returns
+    */
+   public deleteData = async (name: string, deleteObj: object) => {
+      try {
+         this._checkModel(name);
+         const result = await this._getModel(name).deleteMany(deleteObj);
+         return result;
+      } catch (error) {
+         return null;
+      }
+   };
+
+   /**
+    * this helper is use to remove single data field in a collection of mongodb
+    * @param name
+    * @param deleteObj
+    * @returns
+    */
+   public removeSingleData = async (name: string, deleteObj: object) => {
+      try {
+         this._checkModel(name);
+         const result = await this._getModel(name).deleteOne(deleteObj);
+         return result;
+      } catch (error) {
+         return null;
+      }
+   };
+
+   /**
+    * clear the all collections except users collection
+    * @returns boolean
+    */
+   public clearCollectionsData = async () => {
+      try {
+         for (const modelKey in DATA_MODELS) {
+            if (modelKey === DATA_MODELS.User) continue;
+            const model = this._getModel(modelKey);
+            await model.deleteMany();
+         }
+         return true;
+      } catch (err) {
+         return false;
+      }
+   };
+
+   public dropDB = async () => {
+      try {
+         const isDroped = await mongoose.connection?.db.dropDatabase();
+         return isDroped;
+      } catch (err) {
+         return false;
+      }
+   };
+   //---------------------------------internal methods -----------------------------------/
+   // check if the model exist or not if not then throw error
+   _checkModel = (model: string) => {
+      if (!Object.keys(DATA_MODELS).includes(model))
+         throw new Error('Model is not defined.');
+   };
+
+   // get the selected moongose model
+   _getModel = (model: string): Model<any> => {
+      switch (model) {
+         case DATA_MODELS.User:
+            return modelsObejct.User;
+         case DATA_MODELS.Events:
+            return modelsObejct.Events;
+         case DATA_MODELS.Currency:
+            return modelsObejct.Currency;
+         case DATA_MODELS.Dispute:
+            return modelsObejct.Dispute;
+         case DATA_MODELS.Order:
+            return modelsObejct.Order;
+         case DATA_MODELS.Trasaction:
+            return modelsObejct.Transaction;
+         default:
+            return null;
+      }
+   };
+}
+
+export default MongoDataHelper.getInstance();
