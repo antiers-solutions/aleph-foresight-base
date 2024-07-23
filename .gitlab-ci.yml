@@ -4,7 +4,7 @@ stages:
 
 variables:
   AWS_REGION: "us-west-2"
-  ECR_REPO_URL: "381492168839.dkr.ecr.us-west-2.amazonaws.com/stage-explorer-sync-aleph-foresight"
+  ECR_REPO_URL: "381492168839.dkr.ecr.us-west-2.amazonaws.com/stage-explorer-backend-aleph-foresight"
   REPO_URL: "git@repo.antiersolutions.com:jogesh/aleph-foresight-k8-deployments.git"
   TARGET_BRANCH: "stage"
 
@@ -36,7 +36,7 @@ update_deployment:
   script:
     - echo "Cloning deployment repository..."
     - git clone -b $TARGET_BRANCH $REPO_URL
-    - cd aleph-foresight-k8-deployments/explorer/sync
+    - cd aleph-foresight-k8-deployments/explorer/backend
     - echo "Updating deployment.yaml with new image tag..."
     - yq eval ".spec.template.spec.containers[0].image = \"${ECR_REPO_URL}:${CI_COMMIT_SHORT_SHA}\"" -i deployment.yaml
     - git config --global user.email "actions@gitlab.com"
