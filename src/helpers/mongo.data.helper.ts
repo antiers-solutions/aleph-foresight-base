@@ -198,7 +198,6 @@ class MongoDataHelper {
    public findAllEvent = async (
       name: string,
       query: object,
-      filter?:string,
       sort: any = {},
       skip?: number,
       limit?: number,
@@ -207,17 +206,7 @@ class MongoDataHelper {
       try {
          this._checkModel(name);
          const Model = this._getModel(name);
-         let matchQuery = { status: 1, ...query };
-         if (filter == 'volume') {
-            let matchData = {
-               'orderDetails.bidType':{
-                  $ne: 'withdraw',
-               },
-            }
-            matchQuery = { ...matchQuery, ...matchData}
-         } else {
-            matchQuery = { ...matchQuery }
-         }
+         const matchQuery = { status: 1, ...query };
          const pipeline: PipelineStage[] = [
             { $match: matchQuery },
             {
@@ -237,12 +226,25 @@ class MongoDataHelper {
                },
             },
             {
-               $match: matchQuery
-            },
-            {
                $addFields: {
-                  totalVolume: { $sum: '$orderDetails.currentBet' },
-               },
+                  totalVolume: {
+                     $sum:{
+                        $map:{
+                           input: '$orderDetails',
+                           as: 'order',
+                           in: {
+                              $cond:{
+                                 if:{
+                                    $eq:['$$order.bidType','withdraw']
+                                 },
+                                 then:0,
+                                 else:'$$order.currentBet'
+                              }
+                           }
+                        }
+                     }
+                  }                
+              }
             },
             {
                $unwind: '$currencyDetails',

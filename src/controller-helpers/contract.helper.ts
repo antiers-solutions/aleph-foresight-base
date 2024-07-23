@@ -84,7 +84,6 @@ class ContractHelper {
       const eventsData = await mongoDataHelper.findAllEvent(
         DATA_MODELS.Events,
         query,
-        filter,
         sortOptions,
         skip,
         limitValue,
