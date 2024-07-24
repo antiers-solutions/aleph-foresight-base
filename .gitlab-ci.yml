@@ -20,7 +20,7 @@ build:
     - docker build -t $ECR_REPO_URL:$CI_COMMIT_SHORT_SHA .
     - docker push $ECR_REPO_URL:$CI_COMMIT_SHORT_SHA
   only:
-    - feature/pipeline
+    - stage
 
 update_deployment:
   stage: update
@@ -43,4 +43,4 @@ update_deployment:
     - git commit -m "Updated image tag to ${CI_COMMIT_SHORT_SHA}"
     - git push origin $TARGET_BRANCH
   only:
-    - feature/pipeline
+    - stage
