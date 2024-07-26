@@ -107,6 +107,13 @@ class MongoDataHelper {
          return null;
       }
    };
+   /**
+    * find all the events whose result has been announced
+    * @param name 
+    * @param query 
+    * @param sort 
+    * @returns 
+    */
    public findAllResultEvents = async (
       name: string,
       query: any,
@@ -178,10 +185,17 @@ class MongoDataHelper {
          const results = await Model.aggregate(pipeline).sort(sort).exec();
          return results;
       } catch (err) {
-         log.red('Error while fetching data:\n', err.message);
+         log.red(ERROR_MESSAGE.FIND_ALL_ERR, err.message);
          return null;
       }
    };
+   /**
+    * find the price of the currency
+    * @param name 
+    * @param query 
+    * @param sort 
+    * @returns 
+    */
    public findPrice = async (name: string, query: object) => {
       try {
          this._checkModel(name);
@@ -195,6 +209,18 @@ class MongoDataHelper {
          return null;
       }
    };
+   
+   /**
+    * Finds all events based on the provided parameters.
+    * 
+    * @param name - The name of the model to search in.
+    * @param query - The query object to filter the events.
+    * @param sort - The sorting criteria for the events.
+    * @param skip - The number of events to skip.
+    * @param limit - The maximum number of events to return.
+    * @param search - The search string to filter the events by currency name or symbol.
+    * @returns An object containing the events data and the total count of events.
+    */
    public findAllEvent = async (
       name: string,
       query: object,
@@ -225,7 +251,7 @@ class MongoDataHelper {
                   as: 'orderDetails',
                },
             },
-            {
+            { // total volume of each event 
                $addFields: {
                   totalVolume: {
                      $sum:{
@@ -235,9 +261,9 @@ class MongoDataHelper {
                            in: {
                               $cond:{
                                  if:{
-                                    $eq:['$$order.bidType','withdraw']
-                                 },
-                                 then:0,
+                                    $eq:['$$order.bidType','withdraw'] // if the bet is withdrawn 
+                                 }, 
+                                 then:0, // do not count the bet amount of that order
                                  else:'$$order.currentBet'
                               }
                            }
@@ -308,7 +334,16 @@ class MongoDataHelper {
          return null;
       }
    };
-   public findAllNoBet = async (
+   /**
+    * Finds number of bets for users
+    * @param name 
+    * @param query 
+    * @param sort 
+    * @param skip 
+    * @param limit
+    * @returns An object containing the user created events and the total count of events.
+    */
+   public findAllNoBet =  async (
       name: string,
       query: object,
       sort: any = {},
@@ -358,7 +393,15 @@ class MongoDataHelper {
          return null;
       }
    };
-
+   /**
+    * Finds all orders of users
+    * @param name 
+    * @param query 
+    * @param sort 
+    * @param skip 
+    * @param limit 
+    * @returns 
+    */
    public findAllOrdersUser = async (
       name: string,
       query: object,
@@ -428,6 +471,15 @@ class MongoDataHelper {
          return null;
       }
    };
+   /**
+    * Finds all closed  and open position (events) 
+    * @param name 
+    * @param query 
+    * @param skip 
+    * @param limit 
+    * @param statusType 
+    * @returns 
+    */
    public findAllClosedPosition = async (
       name: string,
       query: any,
@@ -441,9 +493,9 @@ class MongoDataHelper {
          //Aggregation pipeline
          let matchData:object = {};
          if (statusType === 1) {
-            matchData = { $in: [1, 3] };
+            matchData = { $in: [1, 3] }; // 1 - active , 3 - bid close
          } else {
-            matchData = { $in: [0, 2, 4] };
+            matchData = { $in: [0, 2, 4] }; // 0 - close, 2 - result declare, 4 - dispute period end
          }
          const pipeline: PipelineStage[] = [
             {
@@ -562,6 +614,12 @@ class MongoDataHelper {
          return null;
       }
    };
+   /**
+    * find event details and currency price
+    * @param name 
+    * @param query 
+    * @returns 
+    */
    public findEventPrice = async (name: string, query: object) => {
       try {
          this._checkModel(name);
@@ -589,7 +647,7 @@ class MongoDataHelper {
                $unwind: '$currencyDetails', // Flatten the array of joined documents
             },
             {
-               $addFields: {
+               $addFields: { // difference between current price and price level
                   priceDifference: {
                      $cond: {
                         if: { $gte: ['$currencyDetails.price', '$priceLevel'] },
@@ -601,7 +659,7 @@ class MongoDataHelper {
                         },
                      },
                   },
-                  sign: {
+                  sign: { 
                      $cond: {
                         if: { $gte: ['$currencyDetails.price', '$priceLevel'] },
                         then: 'positive',
@@ -612,7 +670,7 @@ class MongoDataHelper {
                },
             },
             {
-               $addFields: {
+               $addFields: { // price difference percent 
                   percentageDifference: {
                      $multiply: [
                         {
@@ -658,7 +716,16 @@ class MongoDataHelper {
          return null;
       }
    };
-
+   /**
+    * finds all the closed and open position (Events) 
+    * @param name 
+    * @param query 
+    * @param status 
+    * @param sort 
+    * @param skip 
+    * @param limit 
+    * @returns 
+    */
    public findAllClosedPositionAdmin = async (
       name: string,
       query?: any,
@@ -673,11 +740,11 @@ class MongoDataHelper {
          //Aggregation pipeline
          let matchData:object = {};
          if (!isNaN(status)) {
-            if (status === 1) {
+            if (status === 1) { // open position
                matchData = {
                   $or: [{ status: 1 }, { status: 3 }],
                };
-            } else {
+            } else { // close position
                matchData = {
                   $or: [{ status: 0 }, { status: 2 }],
                };
@@ -726,6 +793,14 @@ class MongoDataHelper {
          return null;
       }
    };
+   /**
+    * finds all the disputes 
+    * @param name 
+    * @param sort 
+    * @param skip 
+    * @param limit 
+    * @returns 
+    */
    public findAllDispute = async (
       name: string,
       sort: any = {},
@@ -776,6 +851,13 @@ class MongoDataHelper {
          return null;
       }
    };
+   /**
+    * finds the net position ( PROFIT and LOSS ) of the user on platform
+    * @param name 
+    * @param query 
+    * @param result 
+    * @returns 
+    */
    public findSumNetPosition = async (
       name: string,
       query: object,
@@ -826,6 +908,15 @@ class MongoDataHelper {
          return null;
       }
    };
+   /**
+    * finds all the users and their details on platform for the admin
+    * @param name 
+    * @param query 
+    * @param sort 
+    * @param skip 
+    * @param limit 
+    * @returns 
+    */
    public findAllUserAdmin = async (
       name: string,
       query: object,
@@ -912,6 +1003,15 @@ class MongoDataHelper {
          return null;
       }
    };
+   /**
+    * finds all the event creators on the platform for admin
+    * @param name 
+    * @param query 
+    * @param sort 
+    * @param skip 
+    * @param limit 
+    * @returns 
+    */
    public findAllAdminEventCreators = async (
       name: string,
       query: object,
@@ -974,38 +1074,12 @@ class MongoDataHelper {
          return null;
       }
    };
-   // public findTotalEventCreators = async (name: string, query: object) => {
-   //    try {
-   //       this._checkModel(name);
-   //       const Model = this._getModel(name);
-   //       //Aggregation pipeline
-   //       const pipeline = [
-   //          { $match: query },
-   //          {
-   //             $lookup: {
-   //                from: 'events', // Collection name to join
-   //                localField: 'userId', // Field from Orders collection
-   //                foreignField: 'walletAddress', // Field from userDetails collection
-   //                as: 'userDetails', // Alias for joined data
-   //             },
-   //          },
-   //       ];
-   //       const results = await Model.aggregate(pipeline).exec();
-   //       results.map((item) => {
-   //          item.userDetails = item.userDetails.filter((user) => {
-   //             return (
-   //                user.userId.toLowerCase() == item.walletAddress.toLowerCase()
-   //             );
-   //          });
-   //          item.noOfEvents = item.userDetails.length;
-   //          return item;
-   //       });
-   //       return results;
-   //    } catch (err) {
-   //       log.red(ERROR_MESSAGE.FIND_ALL_ERR, err.message);
-   //       return null;
-   //    }
-   // };
+   /**
+    * finds total number of event creators
+    * @param name 
+    * @param query 
+    * @returns 
+    */
    public findTotalEventCreators = async (name: string, query: object) => {
       try {
          this._checkModel(name);
@@ -1026,6 +1100,12 @@ class MongoDataHelper {
          return null;
       }
    };
+   /**
+    * finds all the events traded on the platform
+    * @param name 
+    * @param query 
+    * @returns 
+    */
    public findAllEventTraded = async (name: string, query: any) => {
       try {
          this._checkModel(name);
@@ -1047,6 +1127,12 @@ class MongoDataHelper {
          return null;
       }
    };
+   /**
+    * finds the total volume traded (amount spent) on the platform
+    * @param name 
+    * @param query 
+    * @returns 
+    */
    public findAllSum = async (name: string, query: any) => {
       try {
          this._checkModel(name);

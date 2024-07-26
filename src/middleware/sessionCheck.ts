@@ -34,7 +34,6 @@ export const sessionCheck = async (
       // updating the token time for session login
       await redisHelper.updateRedisTime(
         token,
-        // { ...value },
       );
       req.body.walletAddress = value.signerAddress.toLocaleLowerCase()
       // if the user access token is found and valid proceed the user to its request

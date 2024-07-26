@@ -9,6 +9,12 @@ const ipfs = create({
 });
 
 class ContractHelper {
+  /**
+   * helper function to create IPFS url
+   * @param res 
+   * @param payload
+   * @returns
+   */
   createIpfsUrl = async (
     res: Response,
     payload: {
@@ -37,7 +43,9 @@ class ContractHelper {
     }
   }; 
   /**
-   * User Details handel in helper function
+   *  helper function to get all the events on platform
+   * @param res 
+   * @param payload
    * @returns
    */
   public getEvents = async (
@@ -54,6 +62,7 @@ class ContractHelper {
       const { page, limit, filterCoin, filter, search } = payload;
       const { skip, limitValue } = getPaginationParams(page, limit);
       const query: any = {};
+      // filter based on type of currency
       if (
         filterCoin !== undefined &&
         filterCoin.trim() !== "" &&
@@ -74,7 +83,7 @@ class ContractHelper {
           sortOptions.priceLevel = -1; // Default sorting by priceLevel in descending order
           break;
         case "volume":
-          sortOptions.totalVolume = -1;
+          sortOptions.totalVolume = -1;//Events based on totalvolume, descending order based on total volume on event
           break;  
         case undefined:
         default:
@@ -104,7 +113,9 @@ class ContractHelper {
     }
   };
   /**
-   * User Details handel in helper function
+   * helper function to get details of an event
+   * @param res 
+   * @param payload
    * @returns
    */
   public getEventDetails = async (
@@ -133,7 +144,9 @@ class ContractHelper {
     }
   };
   /**
-   * User Details handel in helper function
+   * helper function to get orders (activity) of users 
+   * @param res 
+   * @param payload
    * @returns
    */
   public getOrder = async (
@@ -148,7 +161,9 @@ class ContractHelper {
     try {
       const { page, limit, userAddress, filter } = payload;
       const { skip, limitValue } = getPaginationParams(page, limit);
+      // query to get order[activity] of a specific user and all users
       let query = userAddress != UNDEFINED ? { userId: userAddress.toLocaleLowerCase() } : {};
+      // filter for queried user
       if (userAddress && filter != UNDEFINED) {
         let status: object = {};
         switch (filter) {
@@ -197,7 +212,9 @@ class ContractHelper {
     }
   };
   /**
-   * User Details handel in helper function
+   * helper function to get the list of closed position [events] of logged in user
+   * @param res
+   * @param payload
    * @returns
    */
   public getClosedPosition = async (
@@ -234,8 +251,12 @@ class ContractHelper {
       return RESPONSE.INTERNAL_SERVER_ERROR;
     }
   };
-
-
+  /**
+   * helper function to get bets {yes , no} on an event
+   * @param res
+   * @param payload
+   * @returns
+   */
   public getOnEventsBet = async (
     res: Response,
     payload: {
@@ -244,6 +265,7 @@ class ContractHelper {
     }
   ) => {
     try {
+      // bid on yes
       const trueOrder = await mongoDataHelper.findAll(
         DATA_MODELS.Order,
         {
@@ -256,6 +278,7 @@ class ContractHelper {
       if (trueOrder==null){
         return RESPONSE.DATA_NOT_FOUND;
       }
+      // bid on no
       const falseOrder = await mongoDataHelper.findAll(
         DATA_MODELS.Order,
         {
@@ -291,6 +314,12 @@ class ContractHelper {
       return RESPONSE.INTERNAL_SERVER_ERROR;
     }
   };
+  /**
+   * helper function to get events created by logged in user
+   * @param res
+   * @param payload
+   * @returns
+   */
   public getUserEvent = async (
     res: Response,
     payload: { userAddress: string; page: number; limit: number,filter:string }
@@ -328,6 +357,12 @@ class ContractHelper {
       return RESPONSE.INTERNAL_SERVER_ERROR;
     }
   };
+  /**
+   * helper function to get total traded amount of logged in user
+   * @param res
+   * @param payload
+   * @returns
+   */
   public totalTraded = async (userAddress: string) => {
     try {
       const total = await mongoDataHelper.findAllEventTraded(DATA_MODELS.Order, {
@@ -347,6 +382,12 @@ class ContractHelper {
       return RESPONSE.INTERNAL_SERVER_ERROR;
     }
   };
+  /**
+   * helper function to get total volume traded of logged in user
+   * @param res
+   * @param payload
+   * @returns
+   */
   public volumeTraded = async (userAddress: string) => {
     try {
       let volumeTraded = await mongoDataHelper.findAllSum(DATA_MODELS.Order, {
@@ -370,6 +411,12 @@ class ContractHelper {
       return RESPONSE.INTERNAL_SERVER_ERROR;
     }
   };
+  /**
+   * helper function to get profit and loss bear by logged in user
+   * @param res
+   * @param payload
+   * @returns
+   */
   public netPosition = async (userAddress: string) => {
     try {
        const trueAmountResult = await mongoDataHelper.findSumNetPosition(
@@ -408,7 +455,12 @@ class ContractHelper {
        return RESPONSE.INTERNAL_SERVER_ERROR;
     }
  };
- 
+ /**
+   * helper function to get profit and loss bear by logged in user
+   * @param res
+   * @param payload
+   * @returns
+   */
   public totalBetOnEvent = async (eventId: string) => {
     try {
       const totalNoOfBet = await mongoDataHelper.findAll(DATA_MODELS.Order, {

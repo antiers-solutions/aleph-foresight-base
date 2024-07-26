@@ -1,6 +1,12 @@
 import * as Joi from 'joi';
 import * as express from 'express';
-
+/**
+ * validation while connecting wallet or logging in 
+ * @param req 
+ * @param res 
+ * @param next 
+ * @returns 
+ */
 export const loginValidation = (
   req: express.Request,
   res: express.Response,

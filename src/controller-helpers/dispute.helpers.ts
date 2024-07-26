@@ -1,9 +1,14 @@
 import { Response } from "express";
 import { STATUS_CODES, RESPONSE_MESSAGES, DATA_MODELS } from "../constants";
 import mongoDataHelper from "../helpers/mongo.data.helper";
-// import redisHelper from "../helpers/redis.helper";
 const { getPaginationParams, RESPONSE } = require("./common.helpers");
 class DisputeHelper {
+  /**
+   * get all disputes of an logged in user
+   * @param res 
+   * @param payload 
+   * @returns 
+   */
   public getDispute = async (
     res: Response,
     payload: {
@@ -27,9 +32,6 @@ class DisputeHelper {
         skip,
         limitValue
       );
-      if (dispute==null){
-        return RESPONSE.DATA_NOT_FOUND;
-      }
       const disputeData = await mongoDataHelper.findAll(DATA_MODELS.Dispute,query);
       if (disputeData==null){
         return RESPONSE.DATA_NOT_FOUND;
@@ -49,6 +51,12 @@ class DisputeHelper {
       return RESPONSE.INTERNAL_SERVER_ERROR;
     }
   };
+  /**
+   * helper function to raise dispute on a event by logged in user
+   * @param res 
+   * @param payload 
+   * @returns 
+   */
   public raiseDispute = async (
     res: Response,
     payload: {
@@ -107,6 +115,12 @@ class DisputeHelper {
       return RESPONSE.INTERNAL_SERVER_ERROR;
     }
   };
+  /**
+   * helper function to get the details of event which has been selected to raise the dispute
+   * @param res 
+   * @param payload 
+   * @returns 
+   */
   public getDisputeEvent = async (
     res: Response,
     payload: {

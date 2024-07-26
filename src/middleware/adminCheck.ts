@@ -19,8 +19,10 @@ export const adminCheck =  async (
     next: NextFunction
   ) => {
     try {  
+      // fetch the admin address from contract
       const adminAddress = await getAdminAddress();
       const token = String(req.cookies.token);
+      // check for token
       if (!token || token == undefined || await isTokenExpired(token)) {
         return sendResponse(res, {
           message: RESPONSE_MESSAGES.UNAUTHORIZED,
@@ -35,11 +37,12 @@ export const adminCheck =  async (
 
       if (value.userAgent == userAgentRequest && value.signerAddress.toLocaleLowerCase() == adminAddress.toLocaleLowerCase() 
         && value.role == ROLE) {
+           // updating the token time for session login
           await redisHelper.updateRedisTime(
             token,
-            // { ...value },
           );
           req.body.walletAddress = value.signerAddress.toLocaleLowerCase()
+          // if the admin access token is found and valid proceed the user to its request
             next();
       }
       else {

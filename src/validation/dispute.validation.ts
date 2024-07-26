@@ -1,7 +1,13 @@
 import * as Joi from 'joi';
 import * as express from 'express';
 
-
+/**
+ * validation while raising the dispute
+ * @param req 
+ * @param res 
+ * @param next 
+ * @returns 
+ */
 export const disputeValidation = (
     req: express.Request,
     res: express.Response,

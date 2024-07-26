@@ -14,6 +14,12 @@ import redisHelper from "../helpers/redis.helper";
 import { ADMIN_LOGIN, REDIS_EX_TIME } from "../constants/admin.constant";
 import { ApiResponse } from "interfaces/user.helpers.interface";
 class AdminHelper {
+  /**
+   * helper function to get the list of all the users 
+   * @param res
+   * @param payload
+   * @returns
+   */
   public getUser = async (
     res: Response,
     payload: {
@@ -45,6 +51,12 @@ class AdminHelper {
       return RESPONSE.INTERNAL_SERVER_ERROR;
     }
   };
+  /**
+   * helper function to get all the event creators 
+   * @param res
+   * @param payload
+   * @returns
+   */
   public getEventsCreators = async (
     res: Response,
     payload: {
@@ -77,7 +89,9 @@ class AdminHelper {
     }
   };
   /**
-   * User Details handel in helper function
+   * helper function to get the list of all the closed events 
+   * @param res
+   * @param payload
    * @returns
    */
   public getClosedPosition = async (
@@ -94,10 +108,11 @@ class AdminHelper {
       const { page, limit, status, filter, token } = payload;
       const { skip, limitValue } = getPaginationParams(page, limit);
       let query: any = {};
+      // get the token from redis
       const value = await redisHelper.client.get(token);
       switch (filter) {
         case "admin":
-          query.userId = JSON.parse(value).signerAddress.toLocaleLowerCase();
+          query.userId = JSON.parse(value).signerAddress.toLocaleLowerCase(); // wallet address from token
           break;
         case "user":
           query.userId = {
@@ -130,7 +145,13 @@ class AdminHelper {
       return RESPONSE.INTERNAL_SERVER_ERROR;
     }
   };
-
+  /**
+   * The admin sign-in helper handles login operation and check if the user is admin or not
+   * @param res
+   * @param payload
+   * @param userAgent
+   * @returns
+   */
   public adminLogin = async (
     res: Response,
     payload: {
@@ -141,17 +162,22 @@ class AdminHelper {
   ): Promise<ApiResponse> => {
     try {
       const adminAddress = await getAdminAddress();
+      // Function to verify the signature
       const verifyPersonalSign = (
         message: string,
         signature: string,
         publicKey: string
       ) => {
+        // This line creates a buffer from the message string passed into the function. Buffers are Node.js' way of handling binary data.
         const msgBuffer = Buffer.from(message);
+        //This line creates a prefix as required by Ethereum's message signing standard (EIP-191). It's a string that specifies the type of message and its length
         const prefix = Buffer.from(
           "\x19Ethereum Signed Message:\n" + msgBuffer.length,
           "utf-8"
         );
+        //This line calculates the Keccak-256 hash (also known as SHA-3) of the concatenated prefix and message buffer.
         const msgHash = keccak256(Buffer.concat([prefix, msgBuffer]));
+        // Parse the signature
         const signatureParams = fromRpcSig(signature);
         const publicKeyBuffer = ecrecover(
           msgHash,
@@ -159,8 +185,10 @@ class AdminHelper {
           signatureParams.r,
           signatureParams.s
         );
+        // Derive the Ethereum address from the public key buffer
         const addressBuffer = pubToAddress(publicKeyBuffer);
         const address = bufferToHex(addressBuffer);
+        // Compare the provided public key with the address(ethereum address)
         return {
           isAddress: address.toLocaleLowerCase() === publicKey.toLocaleLowerCase(),
           address,
@@ -170,6 +198,7 @@ class AdminHelper {
       const message = payload?.wallet_address;
       const signature = payload?.signature_key;
       const signerAddress = payload?.wallet_address;
+      // Verify the signature
       const signatureVerified = verifyPersonalSign(
         message,
         signature,
@@ -187,10 +216,10 @@ class AdminHelper {
           role,
           userAgent: userAgent,
         };
+        // set token in redis
         await redisHelper.client.set(token, JSON.stringify(setData), {
           EX: REDIS_EX_TIME.EXPIRE,
         });
-        await redisHelper.client.get(token);
         const admin = await mongoDataHelper.findOne(DATA_MODELS.User, {
           walletAddress: signatureVerified?.address.toLocaleLowerCase(),
         });
@@ -233,6 +262,12 @@ class AdminHelper {
       };
     }
   };
+  /**
+   * helper function to get the total transactions on the platform 
+   * @param res
+   * @param payload
+   * @returns
+   */
   public getTotalTransaction = async () => {
     try {
       const eventTransactions = await mongoDataHelper.getCount(
@@ -262,7 +297,9 @@ class AdminHelper {
     }
   }; 
   /**
-   * User Details handel in helper function
+   * helper function to get total events on the platform 
+   * @param res
+   * @param payload
    * @returns
    */
   public getTotalEvents = async () => {
@@ -291,7 +328,12 @@ class AdminHelper {
       return RESPONSE.INTERNAL_SERVER_ERROR;
     }
   };
-
+  /**
+   * helper function to get total number of diputes has been raised
+   * @param res
+   * @param payload
+   * @returns
+   */
   public getTotalDispute = async () => {
     try {
       const total = await mongoDataHelper.getCount(DATA_MODELS.Dispute, {});
@@ -310,7 +352,9 @@ class AdminHelper {
     }
   };
   /**
-   * User Details handel in helper function
+   * helper function to get list of all the raised disputes 
+   * @param res
+   * @param payload
    * @returns
    */
   public getDisputeRaise = async (

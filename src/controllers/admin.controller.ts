@@ -23,30 +23,67 @@ class AdminController implements Controller {
     this.router.get(`${this.path}/getTotalDispute`,adminCheck, this.getTotalDispute);
     this.router.post(`${this.path}/adminLogin`,loginValidation, this.adminLogin)
   }
+  /**
+   * It gets the list of users from its helper function
+   * @param req
+   * @param res
+   * @returns
+   */
   private getUser = async (req: Request, res: Response) => {
     const page = Number(req.query.page);
     const limit = Number(req.query.limit);
     const getUser = await AdminHelper.getUser(res,{page,limit});
     return sendResponse(res,getUser);
   };
+  /**
+   * It gets the event creators list from its helper function
+   * @param req
+   * @param res
+   * @returns
+   */
   private getEventsCreators = async (req: Request, res: Response) => {
     const page = Number(req.query.page);
     const limit = Number(req.query.limit);
     const getUser = await AdminHelper.getEventsCreators(res,{page,limit});
     return sendResponse(res,getUser);
   };
+  /**
+   * It gets the total events from its helper function
+   * @param req
+   * @param res
+   * @returns
+   */
   private getTotalEvents = async (req: Request, res: Response) => {
     const getTotalEvents: object = await AdminHelper.getTotalEvents();
     return sendResponse(res, getTotalEvents);
   };
+  /**
+   * It gets the total disputes from its helper function
+   * @param req
+   * @param res
+   * @returns
+   */
   private getTotalDispute = async (req: Request, res: Response) => {
     const getTotalDispute: object = await AdminHelper.getTotalDispute();
     return sendResponse(res, getTotalDispute);
   };
+  /**
+   * It gets the total transaction from its helper function
+   * @param req
+   * @param res
+   * @returns
+   */
   private getTotalTransaction = async (req: Request, res: Response) => {
     const getTotalTransaction: object = await AdminHelper.getTotalTransaction();
     return sendResponse(res, getTotalTransaction)
   };
+  /**
+   * It gets the list of closed position from its helper function
+   * user can check for different status and filters 
+   * @param req
+   * @param res
+   * @returns
+   */
   private getClosedPosition = async (req: Request, res: Response) => {
     const page = Number(req.query.page);
     const limit = Number(req.query.limit);
@@ -56,6 +93,13 @@ class AdminController implements Controller {
     const closedPosition:object = await AdminHelper.getClosedPosition(res,{page,limit,status,filter,token});
     return sendResponse(res, closedPosition);
   };
+  /**
+   * It gets the admin login and sigup details from its helper
+   * and sends the cookie with the response
+   * @param req 
+   * @param res 
+   * @returns 
+   */
   private adminLogin = async (req: Request, res: Response) => {
     const adminData:object = await AdminHelper.adminLogin(
       res,
@@ -74,6 +118,12 @@ class AdminController implements Controller {
     }
     return sendResponse(res, adminData);
   };
+  /**
+   * It gets the dispute raised by the users from its helper function 
+   * @param req 
+   * @param res 
+   * @returns 
+   */
   private getDisputeRaise = async (req: Request, res: Response) => {
     const page = Number(req.query.page);
     const limit = Number(req.query.limit);

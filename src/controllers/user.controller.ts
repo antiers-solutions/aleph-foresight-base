@@ -75,14 +75,32 @@ class UserController implements Controller {
     const fileUrl: object = await userHelper.uploadProfile(req);
     return sendResponse(res, fileUrl);
   };
+  /**
+   * It gets the total event creators
+   * @param req
+   * @param res
+   * @returns
+   */
   private getTotalEventCreators = async (req: Request, res: Response) => {
     const getTotalEventCreators: object = await userHelper.getTotalEventCreators();
     return sendResponse(res, getTotalEventCreators);
   };
+  /**
+   * It gets the total users
+   * @param req
+   * @param res
+   * @returns
+   */
   private getTotalUser = async (req: Request, res: Response) => {
     const getTotalUser: object = await userHelper.getTotalUser();
     return sendResponse(res, getTotalUser);
   };
+  /**
+   * It gets the total volume 
+   * @param req
+   * @param res
+   * @returns
+   */
   private getTotalVolume = async (req: Request, res: Response) => {
     const getTotalVolume: object = await userHelper.getTotalVolume();
     return sendResponse(res, getTotalVolume);
@@ -100,7 +118,7 @@ class UserController implements Controller {
     return sendResponse(res, check);
   };
   /**
-   * It handles the user logout helper
+   * gets the user profile 
    * @param req
    * @param res
    * @returns

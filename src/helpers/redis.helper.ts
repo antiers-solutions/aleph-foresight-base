@@ -68,7 +68,11 @@ class Redis {
     }
   };
 
-
+/**
+ * this helper function used to update the expiration time of the token in redis
+ * @param token 
+ * @returns 
+ */
 public updateRedisTime = async (
   token: string,
 ): Promise<boolean | null> => {

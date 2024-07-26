@@ -13,10 +13,22 @@ class CurrencyController implements Controller {
     this.router.get(`${this.path}/getTopMarket`, this.getTopMarket);
     this.router.get(`${this.path}/getCurrentPrice`, this.getCurrentPrice);
   }
+  /**
+   * Get the top market currencies.
+   * @param req 
+   * @param res 
+   * @returns 
+   */
   private getTopMarket = async (req: Request, res: Response) => {
     const getTopMarket = await currencyHelper.getTopMarket();
     return sendResponse(res,getTopMarket);
   };
+  /**
+   * Get the current price of a currency.
+   * @param req 
+   * @param res 
+   * @returns 
+   */
   private getCurrentPrice = async (req: Request, res: Response) => {
     const coin = String(req.query.coin)
     const getCurrentPrice = await currencyHelper.getCurrentPrice(coin);

@@ -32,6 +32,10 @@ const getPaginationParams = (
     limitValue,
   };
 };
+/**
+ * get admin address from the contract
+ * @returns admin address
+*/
 const getAdminAddress = async () => {
   try {
     const adminAddress = await contract.methods.read_admin_address().call();
@@ -40,7 +44,11 @@ const getAdminAddress = async () => {
     throw new Error(RESPONSE_MESSAGES.ADMINNOTFOUND);
   }
 };
-
+/**
+ * Check if token is expired
+ * @param {string} token - The token to check.
+ * @returns {boolean}
+ */
 async function isTokenExpired(token) {
   const value = JSON.parse(await redisHelper.client.get(token));
 
@@ -68,6 +76,7 @@ const RESPONSE = {
     message: RESPONSE_MESSAGES.DATA_NOT_FOUND,
   }
 };
+
 module.exports = {
   getPaginationParams, getAdminAddress, RESPONSE, isTokenExpired
 };

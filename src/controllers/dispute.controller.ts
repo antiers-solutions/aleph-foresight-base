@@ -16,6 +16,12 @@ class DisputeController implements Controller {
       this.router.get(`${this.path}/getDispute`,sessionCheck, this.getDispute);
       this.router.get(`${this.path}/getDisputeEvent`,sessionCheck, this.getDisputeEvent);
     }
+    /**
+     * Get dispute details with filters from its helper function for logged in user 
+     * @param req 
+     * @param res
+     * @returns
+     */
     private getDispute = async (req: Request, res: Response) => {
       const page = Number(req.query.page);
       const limit = Number(req.query.limit);
@@ -24,10 +30,22 @@ class DisputeController implements Controller {
       const getDispute = await disputeHelper.getDispute(res,{userAddress,filter,page,limit});
       return sendResponse(res,getDispute);
     };
+    /**
+     * raise a dispute on event  
+     * @param req
+     * @param res
+     * @returns
+     */
     private raiseDispute = async (req: Request, res: Response) => {
       const raiseDispute = await disputeHelper.raiseDispute(res,req.body);
       return sendResponse(res,raiseDispute);
     };
+    /**
+     * Get dispute event details from its helper function for logged in user 
+     * @param req 
+     * @param res
+     * @returns
+     */
     private getDisputeEvent = async (req: Request, res: Response) => {
       const userAddress = String(req.body.walletAddress);
       const getDisputeEvent = await disputeHelper.getDisputeEvent(res,{userAddress});

@@ -12,6 +12,7 @@
     "docker-services-up": "sudo docker-compose up -d",
     "test": "NODE_ENV=test mocha -r ts-node/register ./src/tests/Unit/index.test.ts",
     "test:coverage": "nyc --reporter=text mocha -r ts-node/register ./src/tests/Unit/index.test.ts",
+    "test:controller-helpers":"NODE_ENV=test mocha --timeout 20000 -r ts-node/register ./src/tests/controller-helpers/currency.helper.test.js",
     "test:api": "NODE_ENV=test mocha --timeout 20000 -r ts-node/register ./src/tests/Api/api.test.ts",
     "test:api:coverage": "nyc --reporter=text mocha --timeout 30000 -r ts-node/register ./src/tests/Api/api.test.ts",
     "lint": "./node_modules/.bin/eslint 'src/**/*.ts'",

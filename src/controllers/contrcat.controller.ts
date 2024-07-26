@@ -24,10 +24,22 @@ class ContractController implements Controller {
     this.router.get(`${this.path}/getEventDetails`,sessionCheck,this.getEventDetails);
     this.router.get(`${this.path}/totalBetOnEvent`,sessionCheck,this.totalBetOnEvent);
   };
+  /**
+   * Creates an IPFS URL
+   * @param req 
+   * @param res 
+   * @returns 
+   */
   private createIpfsUrl = async (req: Request, res: Response) => {
     const createIpfsUrl = await contractHelper.createIpfsUrl(res, req.body);
     return sendResponse(res,createIpfsUrl);
   };
+  /**
+   * Retrieves a list of events based on the provided query parameters.
+   * @param req 
+   * @param res 
+   * @returns 
+   */
   private getEvents = async (req: Request, res: Response) => {
     const page = Number(req.query.page);
     const limit = Number(req.query.limit);
@@ -39,11 +51,23 @@ class ContractController implements Controller {
     );
     return sendResponse(res, eventData);
   };
+  /**
+   * Retrieves the details of a specific event based on the provided event ID.
+   * @param req 
+   * @param res 
+   * @returns 
+   */
   private getEventDetails = async (req: Request, res: Response) => {
     const eventId = String(req.query.eventId);
     const eventData:object = await contractHelper.getEventDetails(res,{ eventId });
     return sendResponse(res, eventData);
   };
+  /**
+   * Retrieves a list of orders based on the provided query parameters.
+   * @param req 
+   * @param res 
+   * @returns 
+   */
   private getOrder = async (req: Request, res: Response) => {
     const page = Number(req.query.page);
     const limit = Number(req.query.limit);
@@ -52,6 +76,12 @@ class ContractController implements Controller {
     const orderData:object = await contractHelper.getOrder(res, { page, limit, userAddress, filter});
     return sendResponse(res, orderData);
   };
+  /**
+   * Retrieves a list of closed positions based on the provided query parameters.
+   * @param req 
+   * @param res 
+   * @returns 
+   */
   private getClosedPosition = async (req: Request, res: Response) => {
     const page = Number(req.query.page);
     const limit = Number(req.query.limit);
@@ -62,12 +92,24 @@ class ContractController implements Controller {
     );
     return sendResponse(res, closedPosition);
   };
+  /**
+   * Retrieves bets of the provided event Id of the user
+   * @param req 
+   * @param res 
+   * @returns 
+   */
   private getOnEventsBet = async (req: Request, res: Response) => {
     const userAddress = String(req.body.walletAddress);
     const eventId = String(req.query.eventId);
     const getOnEventsBet: object = await contractHelper.getOnEventsBet(res, { userAddress, eventId });
     return sendResponse(res, getOnEventsBet);
   };
+  /**
+   * Retrieves a list of events based on the provided query parameters.
+   * @param req 
+   * @param res 
+   * @returns 
+   */
   private getUserEvent =async (req:Request,res:Response) => {
     const userAddress = String(req.body.walletAddress);
     const page = Number(req.query.page);
@@ -78,21 +120,45 @@ class ContractController implements Controller {
     );
     return sendResponse(res, getUserEvent);
   };
+  /**
+   * Retrieves the total traded amount of the user
+   * @param req 
+   * @param res 
+   * @returns 
+   */
   private totalTraded = async (req: Request, res: Response) => {
     const userAddress = String(req.body.walletAddress);
     const totalTraded:object = await contractHelper.totalTraded(userAddress);
     return sendResponse(res, totalTraded);
   };
+  /**
+   * Retrieves the total volume traded by the user
+   * @param req 
+   * @param res 
+   * @returns 
+   */
   private volumeTraded = async (req: Request, res: Response) => {
     const userAddress = String(req.body.walletAddress);
     const volumeTraded: object = await contractHelper.volumeTraded(userAddress);
     return sendResponse(res, volumeTraded);
   };
+  /**
+   * Retrieves the profile and loss of the user
+   * @param req 
+   * @param res 
+   * @returns 
+   */
   private netPosition = async (req: Request, res: Response) => {
     const userAddress = String(req.body.walletAddress);
     const netPosition: object = await contractHelper.netPosition(userAddress);
     return sendResponse(res, netPosition);
   };
+  /**
+   * Retrieves the total bet on the event
+   * @param req 
+   * @param res 
+   * @returns 
+   */
   private totalBetOnEvent = async (req: Request, res: Response) => {
     const eventId = String(req.query.eventId);
     const totalBetOnEvent:object = await contractHelper.totalBetOnEvent(eventId);

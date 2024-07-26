@@ -89,10 +89,10 @@ class UserHelper {
           userAgent: userAgent,
           token
         };
+        // set token in redis
         await redisHelper.client.set(token, JSON.stringify(setData), {
           EX: REDIS_EX_TIME.EXPIRE,
         });
-        await redisHelper.client.get(token);
         const userCheckdata = await mongoDataHelper.findOne(DATA_MODELS.User, {
           walletAddress: isSignatureValid?.recoveredAddress,
         });
@@ -130,15 +130,16 @@ class UserHelper {
   };
   /**
    * User edit profile Picture
-   * @req
+   * @param req
    * @returns
    */
   public uploadProfile = async (req: any) => {
     try {
       const userAddress = req.body.walletAddress;
       const userName = req.body.userName;
-      const ensId = req.body.ensId;
-      const file = req.file || req.body.file;
+      const ensId = req.body.ensId; //aleph id
+      const file = req.file || req.body.file; // profile picture
+      // validation for file type
       if (req.fileValidationError){
         return {
           error: true,
@@ -150,7 +151,7 @@ class UserHelper {
       if (file !== undefined) {
         const fileContent = file.buffer;
         const fileName = Date.now() + "-" + file.originalname;
-      
+        // Resize the image
         const sizes = [
         { name: 'small', width: 100 },
         { name: 'medium', width: 300 },
@@ -170,6 +171,7 @@ class UserHelper {
           ContentType: req.file.mimetype,
         };
         const saved = await s3.upload(params).promise();
+        // replace the s3 url to cloudfront url
         imageObj[size.name] = saved.Location.replace(`${process.env.S3_BUCKET_URL}`, `${process.env.CLOUDFRONT_URL}`);
 
       });
@@ -181,6 +183,7 @@ class UserHelper {
       const userCheckdata = await mongoDataHelper.findOne(DATA_MODELS.User, {
         walletAddress: userAddress,
       });
+      // check for existing user
       if (userName) {
         const existingUserName = await mongoDataHelper.findOne(DATA_MODELS.User, {
           userName: userName,
@@ -199,6 +202,7 @@ class UserHelper {
         const updateFields:{ensId?:string, userName?:string, profilePicture?:object } = {};
         ensId  && (updateFields.ensId=ensId);
         userName && (updateFields.userName=userName);
+        // if file is there update else keep the previous profile
         imageObj && (updateFields.profilePicture=file?imageObj:userCheckdata.profilePicture);
         await mongoDataHelper.findOneAndUpdate(
           DATA_MODELS.User,
@@ -218,6 +222,10 @@ class UserHelper {
       return RESPONSE.INTERNAL_SERVER_ERROR;
     }
   };
+  /**
+   * helper function to get total number of event creators on platform
+   * @returns 
+   */
   public getTotalEventCreators = async (
   ) => {
     try {
@@ -243,6 +251,10 @@ class UserHelper {
       return RESPONSE.INTERNAL_SERVER_ERROR;
     }
   };
+  /**
+   * helper function to get the total number of users on platform
+   * @returns 
+   */
   public getTotalUser = async () => {
     try {
       const userData = await mongoDataHelper.findAll(DATA_MODELS.User, {});
@@ -264,6 +276,10 @@ class UserHelper {
       return RESPONSE.INTERNAL_SERVER_ERROR;
     }
   };
+  /**
+   * helper function to get the total volume (amount spent) on platform 
+   * @returns 
+   */
   public getTotalVolume = async (
   ) => {
     try {
@@ -287,7 +303,7 @@ class UserHelper {
     }
   };
   /**
-   * User Details handel in helper function
+   *  helper function to get  user's profile 
    * @returns
    */
   public getProfileData = async (wallet_address) => {
