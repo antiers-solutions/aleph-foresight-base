@@ -434,7 +434,7 @@ class MongoDataHelper {
             {
             $addFields:{
                priceLevel:"$targetDateTime.priceLevel",
-               crrencyType:"$targetDateTime.crrencyType"
+               currencyType:"$targetDateTime.currencyType"
             }
             }
          ];
@@ -522,7 +522,11 @@ class MongoDataHelper {
                            'eventStatus': {
                               $first: '$eventDetail.status',
                            },
+                           'targetDateTime': {
+                              $first: '$eventDetail.targetDateTime',
+                              },
                         },
+                        
                      },
                      { $unset: 'eventDetail' },
                      {
@@ -559,6 +563,9 @@ class MongoDataHelper {
                            'eventStatus': {
                               $first: '$eventDetail.status',
                            },
+                           'targetDateTime': {
+                              $first: '$eventDetail.targetDateTime',
+                              },
                         },
                      },
                      { $unset: 'eventDetail' },
