@@ -58,7 +58,7 @@ class UserController implements Controller {
       res.cookie("token", userData.token, {
         path: "/",
         httpOnly: true,
-        secure: false,
+        secure: true,
         sameSite: "none",
         expires: new Date(Date.now() + (REDIS_EX_TIME.EXPIRE))
       });
