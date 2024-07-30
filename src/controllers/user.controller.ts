@@ -55,11 +55,15 @@ class UserController implements Controller {
       req.headers["user-agent"]
     );
     if (userData?.token) {
-      res.cookie("token", userData.token, {
-        //path: "/",
-        httpOnly: false,
-        expires: new Date(Date.now() + (REDIS_EX_TIME.EXPIRE))
-      });
+      // res.cookie("token", userData.token, {
+      //   //path: "/",
+      //   httpOnly: false,
+      //   expires: new Date(Date.now() + (REDIS_EX_TIME.EXPIRE))
+      // });
+      res.writeHead(200,{
+        "Set-Cookies":`token=${userData.token}; HttpOnly`,
+        "Access-Control-Allow-Credentials":"true"
+      }).send()
     }
     return sendResponse(res, userData);
   };
