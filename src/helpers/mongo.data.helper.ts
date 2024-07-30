@@ -433,8 +433,27 @@ class MongoDataHelper {
             },
             {
             $addFields:{
-               priceLevel:"$targetDateTime.priceLevel",
-               currencyType:"$targetDateTime.currencyType"
+               userDetails: {
+                  $filter: {
+                     input: '$userDetails',
+                     as: 'userDetails',
+                     cond: {
+                        $eq: [
+                           { $toLower: '$$userDetails.walletAddress' },
+                           { $toLower: '$userId' },
+                        ],
+                     },
+                  },
+               },
+               targetDateTime:{
+                  $first:"$targetDateTime.targetDateTime"
+               },
+               priceLevel:{
+                  $first:"$targetDateTime.priceLevel",
+               },
+               currencyType:{
+                  $first:"$targetDateTime.currencyType"
+               }
             }
             }
          ];
@@ -445,22 +464,22 @@ class MongoDataHelper {
             .skip(skip)
             .limit(limit)
             .exec();
-         results.map((item) => {
-            const userDetails = item.userDetails.filter(
-               (user) => {
-                  return (
-                     user.walletAddress.toLowerCase() ==
-                     item.userId.toLowerCase()
-                  );
-               }
-            )[0];
-            item.userDetails = userDetails;
-         });
-         results.map((item) => {
-            item.targetDateTime = item.targetDateTime.filter((event) => {
-               return event.userId.toLowerCase() == item.userId.toLowerCase();
-            })[0]?.targetDateTime;
-         });
+         // results.map((item) => {
+         //    const userDetails = item.userDetails.filter(
+         //       (user) => {
+         //          return (
+         //             user.walletAddress.toLowerCase() ==
+         //             item.userId.toLowerCase()
+         //          );
+         //       }
+         //    )[0];
+         //    item.userDetails = userDetails;
+         // });
+         // results.map((item) => {
+            // item.targetDateTime = item.targetDateTime.filter((event) => {
+            //    return event.userId.toLowerCase() == item.userId.toLowerCase();
+            // })[0]?.targetDateTime;
+         // });
          const formattedResults = {
             ordersData: results,
             total: total[0].Order,
@@ -525,6 +544,12 @@ class MongoDataHelper {
                            'targetDateTime': {
                               $first: '$eventDetail.targetDateTime',
                               },
+                           'priceLevel': {
+                              $first: '$eventDetail.priceLevel',
+                              },   
+                           'currencyType': {
+                              $first: '$eventDetail.currencyType',
+                              },   
                         },
                         
                      },
@@ -566,7 +591,14 @@ class MongoDataHelper {
                            'targetDateTime': {
                               $first: '$eventDetail.targetDateTime',
                               },
+                           'priceLevel': {
+                              $first: '$eventDetail.priceLevel',
+                              },   
+                           'currencyType': {
+                              $first: '$eventDetail.currencyType',
+                              },   
                         },
+                        
                      },
                      { $unset: 'eventDetail' },
                      {
