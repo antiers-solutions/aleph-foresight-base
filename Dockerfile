@@ -7,5 +7,6 @@ COPY . .
 # RUN npm ci --only=production
 
 # Bundle app source
+
 CMD [ "npm", "run", "start" ]
 EXPOSE 7001
