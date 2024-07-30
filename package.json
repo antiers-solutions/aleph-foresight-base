@@ -67,7 +67,7 @@
     "uuid": "^9.0.0",
     "web3": "^4.8.0",
     "winston": "^3.13.0",
-    "ts-node": "10.9.2",
+    "ts-node": "10.9.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.16.0",

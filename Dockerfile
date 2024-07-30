@@ -5,7 +5,9 @@ WORKDIR /src/server
 COPY . .
 # If you are building your code for production
 # RUN npm ci --only=production
+RUN npm install 
 
+RUN npm install -g ts-node
 # Bundle app source
 
 CMD [ "npm", "run", "start" ]
