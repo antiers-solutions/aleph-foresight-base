@@ -45,9 +45,9 @@ class App {
     this.app.use(
       cors({
         credentials: true,
-        origin: true,
+        origin: ["https://stage.alephforesight.xyz","https://admin.stage.alephforesight.xyz"],
         methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"],
-        preflightContinue: true,
+        preflightContinue: false,
       })
     );
     this.app.use(express.json());
