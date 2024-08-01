@@ -10,7 +10,7 @@
   <h3 align="center">Aleph-foresight-backend</h3>
 
   <p align="center">
-     Aleph Foresight is a decentralized prediction market platform built on AlephZero-compatible blockchains. The backend is designed to manage the platform's core functionalities, enabling users to create and participate in betting events securely and transparently.
+     Aleph Foresight is a decentralized prediction market platform built on AlephZero blockchain. The backend is designed to manage the platform's core functionalities, enabling users to create and participate in betting events securely and transparently.
     <br />
     <a href="https://alephzero.org/"><strong>Aleph Foresight »</strong></a>
     <br />
@@ -48,7 +48,7 @@
 
 <img width="1436" alt="Aleph home page" src="images/home.png">
 
-Aleph Foresight is a decentralized betting and event management platform built on Ethereum-compatible blockchains. It allows users to create events, place bets, and manage various aspects of the betting process. Here are some key features and functionalities:
+Aleph Foresight is a decentralized betting and event management platform built on  blockchain. It allows users to create events, place bets, and manage various aspects of the betting process. Here are some key features and functionalities:
 
 1. **Event Creation:** Users or admins can create events, specifying details like expiration time and betting closure time. The platform supports fee structures for both event creation and platform usage.
 
