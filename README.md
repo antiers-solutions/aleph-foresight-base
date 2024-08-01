@@ -1,86 +1,151 @@
-# Aleph foresight Backend
+<a name="readme-top"></a>
 
-This application is the backend server for the Grant Management Webapp.
+<!-- PROJECT LOGO -->
+<br />
+<div align="center">
+  <a href="https://alephzero.org/">
+    <img src="images/logo.png" alt="Logo" width="90" height="80">
+  </a>
 
-## Overview
+  <h3 align="center">Aleph-foresight-backend</h3>
 
-It includes the following features:
+  <p align="center">
+     Aleph Foresight is a decentralized prediction market platform built on AlephZero-compatible blockchains. The backend is designed to manage the platform's core functionalities, enabling users to create and participate in betting events securely and transparently.
+    <br />
+    <a href="https://alephzero.org/"><strong>Aleph Foresight »</strong></a>
+    <br />
+  </p>
+</div>
 
-- Data dump from github repositories.
-- Authentication of users using Github.
-- Webhook implementation.
-- Pictorial Representation of data
 
-## Installation
 
-Prerequisites:
+<!-- TABLE OF CONTENTS -->
+<details>
+  <summary>Table of Contents</summary>
+  <ol>
+    <li>
+      <a href="#about-the-project">About The Project</a>
+      <ul>
+        <li><a href="#built-with">Built With</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#getting-started">Getting Started</a>
+      <ul>
+        <li><a href="#prerequisites">Prerequisites</a></li>
+        <li><a href="#installation">Installation</a></li>
+      </ul>
+    </li>
+    <li><a href="#license">License</a></li>
+    <li><a href="#acknowledgments">Acknowledgments</a></li>
+  </ol>
+</details>
 
-- Node: [Installation guide](https://nodejs.org/en/download) (v16)
-- Docker compose: [Installation guide](https://docs.docker.com/compose/install/)
-- Redis: [Installation guide](https://redis.io/docs/getting-started/) (v4.6.7)
-- MongoDB: [Installation guide](https://www.mongodb.com/docs/manual/installation/) (v3.6.8)
-- TypeScript: `npm install typescript -g` (v4.9.5)
 
-#### Clone this repo using:
-```bash
-git clone http://repo.antiersolutions.com/malayatr941/aleph-foresight-backend.git
-```
-```bash
-cd aleph-foresight-backend/
-``` 
-**You can start all the required backend services using docker by using the docker-compose file in the repo. Otherwise, this can also be done manually by following the steps mentioned below.** 
-#### Install the dependencies with npm:
 
-```bash
-npm install
-```
-#### Running project using npm:
+<!-- ABOUT THE PROJECT -->
+## About The Project
 
-1. Configure the environment file with the right environment variable:
-- Locate the `env.example` file in the repository's root directory.
-- Create a copy of `env.example` in `/src/config` and name it `local.env`.
-For help in setting up the environment variables refer the [configuration guide](https://github.com/antiers-solutions/gmw-backend/blob/updated/docs/configuration.md).
+<img width="1436" alt="Aleph home page" src="images/home.png">
 
-2. After successfully setting up and running the required services:
+Aleph Foresight is a decentralized betting and event management platform built on Ethereum-compatible blockchains. It allows users to create events, place bets, and manage various aspects of the betting process. Here are some key features and functionalities:
 
-```bash
-npm start 
-```
-- While setting up the repo for the first time, the data will be loaded from the json files in `/src/db-dump` directory.
-- In case, the application does not find the data from the files in `/src/db-dump` directory, the services will automatically start to load data into local database after you run the `npm start` command. It will take around 30-45 minutes for the data to get processed.
-- Upon a successfull data dump, the application will print a log with message "Data Successfully Stored".
+1. **Event Creation:** Users or admins can create events, specifying details like expiration time and betting closure time. The platform supports fee structures for both event creation and platform usage.
 
-#### Run project using docker compose:
-1. Configure the environment file with the right environment variable:
-- Locate the `env.example` file in the repository's root directory.
-- Create a copy of `env.example` in `/src/config` and name it `prod.env`.
-For help in setting up the environment variables refer the [configuration guide](https://github.com/antiers-solutions/gmw-backend/blob/updated/docs/configuration.md).
+2. **Betting:** Users can place bets on events with options such as "Yes" or "No". The platform tracks betting pools and individual user bets securely.
 
-2. After successfully setting up the `prod.env` file:
-```bash
-docker-compose up -d
-```
+3. **Event Management:** Admins can set or update event results, adjust platform fees, and manage event expiration and bet closure times.
 
-## Testing Guide
-1. Configure the environment file with the right environment variable:
-- Locate the `env.example` file in the repository's root directory.
-- Create a copy of `env.example` in `/src/config` and name it `test.env`.
-**NOTE:-** The `DBNAME` in test.env cannot be same as the `DBNAME` in other environment files.
+4. **Payouts and Claims:**  After an event concludes, users can claim rewards based on their bets and the event result. The platform handles payouts to users, admin rewards, and event creation fees.
+   
+5. **Dispute Resolution:** Users can raise disputes if they believe there’s an issue with an event's outcome, within a specific time frame.
+   
+6. **Administration and Upgrades:** The platform includes administrative controls for setting fees and upgrading the smart contract for easy navigation and exploration.
 
-For help in setting up the environment variables refer the [configuration guide](https://github.com/antiers-solutions/gmw-backend/blob/updated/docs/configuration.md).
-#### Run unit tests:
-```bash
-npm run test 
-```
-#### Run test cases for APIs:
-```bash
-npm run test:api
-```
-#### For unit test coverage:
-```bash
-npm run test:coverage
-```
-#### For test case coverage for APIs:
-```bash
-npm run test:api:coverage
-```
+
+### Built With
+
+* [![NodeJS][NodeJS]][Node-url]
+* [![ExpressJs][ExpressJS]][Express-url]
+* [![MongoDB][MongoDB]][MongoDB-url]
+* [![Typescript][Typescript]][Typescript-url]
+* [![Redis][Redis]][Redis-url]
+* [![Docker][Docker]][Docker-url]
+
+<!-- GETTING STARTED -->
+## Getting Started
+
+To set up the project follow the instructions:
+
+### Prerequisites
+
+* NodeJS - [Installation Guide](https://nodejs.org/en/download/package-manager)
+* Docker - [Installation Guide](https://docs.docker.com/get-docker/)
+
+### Installation
+
+
+1. Enter the env in `src/config/local.env`
+   ```sh
+   PORT=XXXX
+   ADMIN=XXXXXXXXX
+   SOCKET_HOST=XXXXXXXXXXX
+   AWS_ACCESS_KEY_ID=XXXXXXXXX
+   AWS_SECRET_ACCESS_KEY=XXXXXXXXXX
+   S3_REGION=XXXXXX
+   S3_BUCKET=XXXXXXXX
+   REDIS_URL=XXXXXXXXXXX
+   IPFSHOST=XXXXXXXXXXX
+   IPFSURL=XXXXXXXX
+   CONTRACTADDRESS=XXXXXXXXXX
+   MONGO_CONNECTION_URI=XXXXXXXXXXXXXX
+   S3_BUCKET_URL=XXXXXXXXXXX
+   CLOUDFRONT_URL=XXXXXXXXX
+   ORIGIN=XXXXXXX
+   ```
+2. Run docker file
+   ```sh
+   docker build .
+   ```   
+3. Create docker containers from docker compose file
+   ```sh
+   docker compose up -d
+   ```  
+4. Install dependencies
+   ```sh
+   npm install
+   ```   
+5. Run the app in development mode
+   ```sh
+   npm run dev
+   ```  
+
+<!-- LICENSE -->
+## License
+
+Distributed under the Apache License. See `LICENSE.txt` for more information.
+
+
+<!-- ACKNOWLEDGMENTS -->
+## Acknowledgments
+
+* [Typescript](https://www.typescriptlang.org/)
+* [Web3](https://web3js.readthedocs.io/en/v1.10.0/)
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- MARKDOWN LINKS & IMAGES -->
+
+[NodeJS]: https://img.shields.io/badge/nodejs-green?style=for-the-badge&logo=nodedotjs&logoColor=white
+[Node-url]: https://nodejs.org/en/docs
+[ExpressJS]: https://img.shields.io/badge/expressjs-grey?style=for-the-badge&logo=expressdotjs&logoColor=white
+[Express-url]: https://expressjs.com/
+[MongoDB]: https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white
+[MongoDB-url]:https://www.mongodb.com/docs/
+[Typescript]: https://img.shields.io/badge/typescript-blue?style=for-the-badge&logo=typescript&logoColor=white
+[Typescript-url]: https://www.typescriptlang.org/
+[Redis]:https://img.shields.io/badge/redis-%23DD0031.svg?style=for-the-badge&logo=redis&logoColor=white
+[Redis-url]:https://redis.io/docs/latest/
+[Docker]:https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white
+[Docker-url]:https://docs.docker.com/
+
