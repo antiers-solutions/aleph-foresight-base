@@ -240,7 +240,7 @@ class UserHelper {
       if (creators) {
         return {
           error: false,
-          data: { totalCreators, creators },
+          data: { totalCreators },
           status: STATUS_CODES.SUCCESS,
           message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS,
         };

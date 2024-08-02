@@ -42,7 +42,7 @@ class UserController implements Controller {
   };
 
   /**
-   * It gets the ser login and sigup details from its helper
+   * It connects the wallet of the user helps in logging /sign up
    * and sends the cookie with the response
    * @param req
    * @param res
@@ -66,7 +66,7 @@ class UserController implements Controller {
     return sendResponse(res, userData);
   };
   /**
-   * It upload user profile picture
+   * It upload user profile picture and user name
    * @param req
    * @param res
    * @returns

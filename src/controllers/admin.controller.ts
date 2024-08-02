@@ -94,7 +94,7 @@ class AdminController implements Controller {
     return sendResponse(res, closedPosition);
   };
   /**
-   * It gets the admin login and sigup details from its helper
+   * It connects the wallet of the admin helps in logging /sign up
    * and sends the cookie with the response
    * @param req 
    * @param res 

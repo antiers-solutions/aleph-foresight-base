@@ -7,7 +7,8 @@ import { Response, Request, NextFunction } from "express";
 import { Controller } from "./interfaces";
 import sendResponse from "./responses/response.helper";
 import { RESPONSE_MESSAGES, STATUS_CODES } from "./constants";
-
+import swaggerUi from 'swagger-ui-express';
+import * as swaggerDocument from './docs/swagger.json';
 class App {
   public app: express.Application;
   public req: express.Request;
@@ -53,6 +54,7 @@ class App {
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: false }));
     this.app.use(cookieParser());
+    this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
     this.app.use(function onError(err, req:Request, res: any, next:NextFunction) {
       // The error id is attached to `res.sentry` to be returned
       // and optionally displayed to the user for support.

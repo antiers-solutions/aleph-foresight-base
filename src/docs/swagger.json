@@ -1,0 +1,1482 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Aleph Foresight API",
+    "description": "Aleph foresight is a betting platform. This contains the apis that are used to perform operations on the platform."
+  },
+  "host": "localhost:8000",
+  "basePath": "/",
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json",
+    "multipart/form-data"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/": {
+      "tags": [
+        "Admin",
+        "Contract",
+        "Currency",
+        "Dispute",
+        "User"
+      ]
+    },
+    "/api/admin/adminLogin": {
+      "post": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Admin Logins to the dashboard.",
+        "description": "Admin Logins and  enters admin dashboard.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "wallet_address": {
+                  "type": "string",
+                  "example": "0x1234567890abcdef1234567890abcdef12345678"
+                },
+                "signature_key": {
+                  "type": "string",
+                  "example": "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd9876b2407c75d08f7"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      }
+    },
+    "/api/admin/getUser": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "List of users",
+        "description": "It gets list of users on the platform to admin dashboard",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Successful response",
+            "examples": {
+              "application/json": {
+                "message": "Fetch data successfully",
+                "data": {
+                  "users": [
+                    {
+                      "_id": "66ac84e2327967fc0745ca2f",
+                      "ensId": null,
+                      "fullUserName": null,
+                      "userName": null,
+                      "walletAddress": "0x1234567890abcdef1234567890abcdef12345678",
+                      "email": null,
+                      "role": "admin",
+                      "status": "true",
+                      "profilePicture": null,
+                      "password": null,
+                      "createdAt": "2024-08-02T07:04:02.191Z",
+                      "updatedAt": "2024-08-02T07:04:02.191Z",
+                      "__v": 0,
+                      "noOfBets": 0,
+                      "noOfDisputes": 0
+                    }
+                  ],
+                  "total": 5
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/getEventsCreators": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": " list of event creators",
+        "description": "It gets the list of event creators on the platform to admin dashboard",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Successful response",
+            "examples": {
+              "application/json": {
+                "message": "Fetch data successfully",
+                "data": {
+                  "users": [
+                    {
+                      "_id": "66ac84e2327967fc0745ca2f",
+                      "ensId": null,
+                      "fullUserName": null,
+                      "userName": null,
+                      "walletAddress": "0x1234567890abcdef1234567890abcdef12345678",
+                      "email": null,
+                      "role": "admin",
+                      "status": "true",
+                      "profilePicture": null,
+                      "password": null,
+                      "createdAt": "2024-08-02T07:04:02.191Z",
+                      "updatedAt": "2024-08-02T07:04:02.191Z",
+                      "__v": 0,
+                      "userDetails": [
+                        {
+                          "_id": "66a73b0e6728373f95d47c76",
+                          "eventId": "QmQW5sokLVK5WeLGnJkwN8dDV5FBrHAnjYTuhzPFKBget3",
+                          "txnId": "0x8f5bcd34de2af7649e1ca76b9f84d123b4c56d7e89a0b1c2d34e5f6789a0bc1d2",
+                          "userId": "0x1234567890abcdef1234567890abcdef12345678",
+                          "currencyType": "BNB",
+                          "priceLevel": 656,
+                          "targetDateTime": "1722324587",
+                          "bettingClosureTime": "1722324527",
+                          "eventDuration": "1722234930",
+                          "description": "undefined",
+                          "platformFees": 5,
+                          "minimumBetFees": 10,
+                          "maximumBetFees": 50000,
+                          "resolutionSource": "https://coinmarketcap.com/currencies/",
+                          "resolver": "resolver123",
+                          "status": 1,
+                          "eventExpireTime": "30-07-24 07:29",
+                          "betExpireTime": "30-07-24 07:28",
+                          "reward": 0,
+                          "createdAt": "2024-07-29T06:47:42.544Z",
+                          "updatedAt": "2024-07-29T06:47:42.544Z",
+                          "__v": 0
+                        },
+                        {
+                          "_id": "66a73b0e6728373f95d47c10",
+                          "eventId": "QmQW5sokLVK5WeLGnJkwN8dDV5FBrHAnjYTuhzPFKBget3",
+                          "txnId": "0x8f5bcd34de2af7649e1ca76b9f84d123b4c56d7e89a0b1c2d34e5f6789a0bc1d2",
+                          "userId": "0x1234567890abcdef1234567890abcdef12345678",
+                          "currencyType": "BNB",
+                          "priceLevel": 78898,
+                          "targetDateTime": "1722324587",
+                          "bettingClosureTime": "1722324527",
+                          "eventDuration": "1722235488",
+                          "description": "undefined",
+                          "platformFees": 5,
+                          "minimumBetFees": 10,
+                          "maximumBetFees": 50000,
+                          "resolutionSource": "https://example.com/currencies/",
+                          "resolver": "resolver123",
+                          "status": 1,
+                          "eventExpireTime": "30-07-24 07:29",
+                          "betExpireTime": "30-07-24 07:28",
+                          "reward": 0,
+                          "createdAt": "2024-07-29T06:47:42.696Z",
+                          "updatedAt": "2024-07-29T06:47:42.696Z",
+                          "__v": 0
+                        },
+                        {
+                          "_id": "66a746706728373f95d48164",
+                          "eventId": "QmQW5sokLVK5WeLGnJkwN8dDV5FBrHAnjYTuhzPFKBget3",
+                          "txnId": "0x8f5bcd34de2af7649e1ca76b9f84d123b4c56d7e89a0b1c2d34e5f6789a0bc1d2",
+                          "userId": "0x1234567890abcdef1234567890abcdef12345678",
+                          "currencyType": "BNB",
+                          "priceLevel": 98345,
+                          "targetDateTime": "1722328186",
+                          "bettingClosureTime": "1722328126",
+                          "eventDuration": "1722238573",
+                          "description": "undefined",
+                          "platformFees": 5,
+                          "minimumBetFees": 10,
+                          "maximumBetFees": 50000,
+                          "resolutionSource": "https://example.com/currencies/",
+                          "resolver": "resolver123",
+                          "status": 1,
+                          "eventExpireTime": "30-07-24 08:29",
+                          "betExpireTime": "30-07-24 08:28",
+                          "reward": 0,
+                          "createdAt": "2024-07-29T07:36:16.736Z",
+                          "updatedAt": "2024-07-29T07:36:16.736Z",
+                          "__v": 0
+                        }
+                      ],
+                      "noOfEvents": 3
+                    }
+                  ],
+                  "total": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/getClosedPosition": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "List of different [open/closed] positions",
+        "description": "It gets the list of different [open/closed] position of admin and user on platform.",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "statusType",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Successful response",
+            "examples": {
+              "application/json": {
+                "message": "Fetch data successfully",
+                "data": {
+                  "ordersData": [
+                    {
+                      "_id": "66a764756728373f95d48fw3",
+                      "eventId": "mkupwrbfnuwru92LJDOUQOe0rjowjr02irjwrf3o842058",
+                      "txnId": "0x0987654321asdfghkloi084659839djdndie9efmckdieu858t0fkdme7uejdid9",
+                      "status": 1,
+                      "targetDateTime": "1722246741",
+                      "createdAt": "2024-07-29T09:44:21.234Z",
+                      "updatedAt": "2024-07-29T09:44:21.234Z",
+                      "totalAmount": 0,
+                      "transactionCount": 0
+                    },
+                    {
+                      "_id": "66a75f2c6728373f95d48ad9",
+                      "eventId": "mkupwrbfnuwru92LJDOUQOe0rjowjr02irjwrf3o842058",
+                      "txnId": "0x0987654321asdfghkloi084659839djdndie9efmckdieu858t0fkdme7uejdid9",
+                      "status": 1,
+                      "targetDateTime": "1722331785",
+                      "createdAt": "2024-07-29T09:21:48.945Z",
+                      "updatedAt": "2024-07-29T09:21:48.945Z",
+                      "totalAmount": 0,
+                      "transactionCount": 0
+                    },
+                    {
+                      "_id": "66a75e206728373f95d48a6a",
+                      "eventId": "mkupwrbfnuwru92LJDOUQOe0rjowjr02irjwrf3o842058",
+                      "txnId": "0x0987654321asdfghkloi084659839djdndie9efmckdieu858t0fkdme7uejdid9",
+                      "status": 1,
+                      "targetDateTime": "1722331785",
+                      "createdAt": "2024-07-29T09:17:20.905Z",
+                      "updatedAt": "2024-07-29T09:17:20.905Z",
+                      "totalAmount": 285531400000000030000,
+                      "transactionCount": 2
+                    },
+                    {
+                      "_id": "66a749b46728373f95d48273",
+                      "eventId": "mkupwrbfnuwru92LJDOUQOe0rjowjr02irjwrf3o842058",
+                      "txnId": "0x0987654321asdfghkloi084659839djdndie9efmckdieu858t0fkdme7uejdid9",
+                      "status": 1,
+                      "targetDateTime": "1722328186",
+                      "createdAt": "2024-07-29T07:50:12.855Z",
+                      "updatedAt": "2024-07-29T07:50:12.855Z",
+                      "totalAmount": 0,
+                      "transactionCount": 0
+                    }
+                  ],
+                  "total": 13
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/getTotalEvents": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Total number of events on platform",
+        "description": "This gets the total events on the platform to admin dashboard.",
+        "parameters": [
+          {
+            "name": "user-agent",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Successful Response.",
+            "examples": {
+              "application/json": {
+                "message": "Fetch events successfully",
+                "data": {
+                  "totalEvents": 13256,
+                  "totalActiveEvent": 8325
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/getTotalTransaction": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Total number of Transactions on platform",
+        "description": "This gets the total Trabsactions on the platform to admin dashboard.",
+        "parameters": [
+          {
+            "name": "user-agent",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Successful response",
+            "examples": {
+              "application/json": {
+                "message": "Fetch data successfully",
+                "data": {
+                  "transactionData": 3248
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/getDisputeRaise": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "List of disputes raised by the users on platform",
+        "description": "This gets the disputes raised by users on the platform to admin dashboard.",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Successful response.",
+            "examples": {
+              "application/json": {
+                "message": "Fetch data successfully",
+                "data": {
+                  "disputeData": [
+                    {
+                      "_id": "66a0b2c8f31b8912791164c0",
+                      "eventId": "QmbpdnVJoNmRaY1oDdmxpRX9m1XUNC85HBHgqzh7jd0373",
+                      "userId": "0x1234567890asdfghjkl0987654321",
+                      "category": "Wrong settlement",
+                      "description": "Lorem ipsum dollar it Lorem ipsum dollar it Lorem ipsum dollar it Lorem ipsum dollar it Lorem ipsum dollar it Lorem ipsum dollar it Lorem ipsum dollar it Lorem ipsum dollar it ",
+                      "evidenceUrl": [
+                        "https://example.com/ipfs/QmbpdnVJoNmRaY1oDdmxpRX9m1XUNC85HBHgqzh7jd0373",
+                        "https://example.com/ipfs/QmbpdnVJoNmRaY1oDdmxpRX9m1XUNC85HBHgqzh7jd0373"
+                      ],
+                      "createdAt": "2024-07-24T07:52:40.935Z",
+                      "status": "closed",
+                      "updatedAt": "2024-07-24T07:52:40.935Z",
+                      "targetDateTime": []
+                    }
+                  ],
+                  "total": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/getTotalDispute": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Total number of disputes on the platform",
+        "description": "It gets the total disputes on admin dashboard. ",
+        "parameters": [
+          {
+            "name": "user-agent",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Successful response.",
+            "examples": {
+              "application/json": {
+                "message": "Fetch data successfully",
+                "data": {
+                  "total": 164
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/contract/createIpfsUrl": {
+      "post": {
+        "tags": [
+          "Contract"
+        ],
+        "summary": "Creates an IPFS URL",
+        "description": "It creates the IPFS url.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "eventName": {
+                  "type": "string",
+                  "example": "BTC"
+                },
+                "timeStamp": {
+                  "type": "number",
+                  "example": 350375
+                },
+                "price": {
+                  "type": "number",
+                  "example": 900000
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "IPFS URL created successfully",
+            "examples": {
+              "application/json": {
+                "message": "Create ipfs url successfully",
+                "data": "QmSHt4XdmXRorTzcZ2DyguxLmvktvxPQJdCohzWi7Nksut"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/contract/getEvents": {
+      "get": {
+        "tags": [
+          "Contract"
+        ],
+        "summary": "List of events on events",
+        "description": "It gets the list of events on the platform.",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "filterCoin",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "examples": {
+              "application/json": {
+                "message": "Fetch events successfully",
+                "data": {
+                  "eventsData": [
+                    {
+                      "eventId": "QmQDBKquXknb5BGD9DAvTHVP4bVg8eCQ7buESS9wHakwo",
+                      "txnId": "0x777a3abd1ee80693f5eea3aa2fc48083rno35ur9fojo32u92ojf295u2jr293u",
+                      "userId": "0x1234567890098765432mckweijr1456",
+                      "currencyType": "BTC",
+                      "priceLevel": 89000,
+                      "targetDateTime": "1722246741",
+                      "bettingClosureTime": "1722246681",
+                      "eventDuration": "1722246257",
+                      "description": "undefined",
+                      "platformFees": 5,
+                      "minimumBetFees": 10,
+                      "maximumBetFees": 50000,
+                      "resolutionSource": "https://example.com/currencies/",
+                      "resolver": "resolver123",
+                      "status": 1,
+                      "eventExpireTime": "29-07-24 09:52",
+                      "betExpireTime": "29-07-24 09:51",
+                      "reward": 0,
+                      "createdAt": "2024-07-29T09:44:21.234Z",
+                      "updatedAt": "2024-07-29T09:44:21.234Z",
+                      "__v": 0,
+                      "totalVolume": 0,
+                      "convertedDate": "2029-07-24T09:52:00.000Z",
+                      "currentPrice": 62226.828499217336
+                    }
+                  ],
+                  "total": 8
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/contract/getOrder": {
+      "get": {
+        "tags": [
+          "Contract"
+        ],
+        "summary": "List of orders/bids",
+        "description": "It gets the list of orders/bids on the platform.",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "userAddress",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "examples": {
+              "application/json": {
+                "message": "Fetch data successfully",
+                "data": {
+                  "ordersData": [
+                    {
+                      "_id": "66a75eac6728373f95d48aa1",
+                      "bidType": "withdraw",
+                      "orderType": true,
+                      "amount": 10000000000000000000,
+                      "eventId": "QmRSwyf7sj9MDvjT9PZh4Ddo1WVpfnkwejtowjwet",
+                      "currentBet": 10000000000000000000,
+                      "userId": "0x1192402175ur9fno32u5021501951058109tu",
+                      "fees": 5,
+                      "txnId": "0xd10a3813134b2b17d25fdba266c5ff4395ut23oenfo329570239tuj23972092",
+                      "createdAt": "2024-07-29T09:19:40.921Z",
+                      "updatedAt": "2024-07-29T09:22:48.950Z",
+                      "__v": 0,
+                      "userDetails": [],
+                      "targetDateTime": "1722331785",
+                      "priceLevel": 190,
+                      "currencyType": "BTC"
+                    }
+                  ],
+                  "total": 9
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/contract/getClosedPosition": {
+      "get": {
+        "tags": [
+          "Contract"
+        ],
+        "summary": "List of different [open/closed] positions",
+        "description": "It gets the list of different [open/closed] position of user on platform.",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "userAddress",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "examples": {
+              "application/json": {
+                "message": "Fetch data successfully",
+                "data": {
+                  "ordersData": [
+                    {
+                      "data": {
+                        "_id": "66a75dac6728373f95d49986",
+                        "bidType": "true",
+                        "orderType": true,
+                        "amount": 110000000000000000000,
+                        "eventId": "QmQW5sokLVK5WeLGnJkwN8dDV5FBrHAnjYTuhzYI79YH",
+                        "currentBet": 10000000000000000000,
+                        "userId": "0x1234567890OMDMJEHJV0987543218IJ6TFY",
+                        "fees": 5,
+                        "txnId": "0xd10a3813134b2b17d25fdba266c5ff4395ut23oenfo329570239tuj23972092",
+                        "createdAt": "2024-07-29T09:15:24.890Z",
+                        "updatedAt": "2024-07-29T09:15:24.890Z",
+                        "__v": 0,
+                        "eventStatus": 1,
+                        "targetDateTime": "1722324587",
+                        "priceLevel": 656,
+                        "currencyType": "BNB"
+                      }
+                    }
+                  ],
+                  "total": 4
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/contract/getOnEventsBet": {
+      "get": {
+        "tags": [
+          "Contract"
+        ],
+        "summary": "Retrieves bets of the provided event Id",
+        "description": "Retrieves bets of the provided event Id of the user",
+        "parameters": [
+          {
+            "name": "eventId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "examples": {
+              "application/json": {
+                "message": "Fetch events successfully",
+                "data": [
+                  {
+                    "_id": "66a75dac6728373f95d48y8t9",
+                    "bidType": "true",
+                    "orderType": true,
+                    "amount": 110000000000000000000,
+                    "eventId": "QmQW5sokLVK5WeLGnJkwN8dDV5FBrHAnjYTuhzPFKB5tCP",
+                    "currentBet": 10000000000000000000,
+                    "userId": "0x1234567890poiuytrewq0987654321",
+                    "fees": 5,
+                    "txnId": "0xd10a3813134b2b17d25fdba266c5ff4395ut23oenfo329570239tuj23972092",
+                    "createdAt": "2024-07-29T09:15:24.890Z",
+                    "updatedAt": "2024-07-29T09:15:24.890Z",
+                    "__v": 0
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/contract/getUserEvent": {
+      "get": {
+        "tags": [
+          "Contract"
+        ],
+        "summary": "Retrieves a list of events created by user",
+        "description": "Retrieves a list of events created by user",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "examples": {
+              "application/json": {
+                "message": "Fetch events successfully",
+                "data": {
+                  "eventsData": [
+                    {
+                      "_id": "66a75e206728373f95d48a6a",
+                      "eventId": "QmQDBKquXknb5BGD9DAvTHVP4bVg8eCQ7buESS9wHakwo",
+                      "txnId": "0xd10a3813134b2b17d25fdba266c5ff46c6473ae178755cbdf9d5a430a1f878aa",
+                      "userId": "0x1234567890asdfghjkl0987654321",
+                      "currencyType": "BTC",
+                      "priceLevel": 190,
+                      "targetDateTime": "1722331785",
+                      "bettingClosureTime": "1722331725",
+                      "eventDuration": "1722244638",
+                      "description": "undefined",
+                      "platformFees": 5,
+                      "minimumBetFees": 10,
+                      "maximumBetFees": 50000,
+                      "resolutionSource": "https://example.com/currencies/",
+                      "resolver": "resolver123",
+                      "status": 1,
+                      "eventExpireTime": "30-07-24 09:29",
+                      "betExpireTime": "30-07-24 09:28",
+                      "reward": 0,
+                      "createdAt": "2024-07-29T09:17:20.905Z",
+                      "updatedAt": "2024-07-29T09:17:20.905Z",
+                      "__v": 0,
+                      "userDetails": [
+                        {
+                          "_id": "66a75eac6723030580285",
+                          "bidType": "withdraw",
+                          "orderType": true,
+                          "amount": 10000000000000000000,
+                          "eventId": "QmQDBKquXknb5BGD9DAvTHVP4bVg8eCQ7buESS9wHakwo",
+                          "currentBet": 10000000000000000000,
+                          "userId": "0x1234567890asdfghjkl0987654321",
+                          "fees": 5,
+                          "txnId": "0xd10a3813134b2b17d25fdba266c5ff46c6473ae178755cbdf9d5a430a1f878aa",
+                          "createdAt": "2024-07-29T09:19:40.921Z",
+                          "updatedAt": "2024-07-29T09:22:48.950Z",
+                          "__v": 0
+                        },
+                        {
+                          "_id": "66a75ee46728373f95d48abb",
+                          "bidType": "withdraw",
+                          "orderType": true,
+                          "amount": 275531400000000030000,
+                          "eventId": "QmQDBKquXknb5BGD9DAvTHVP4bVg8eCQ7buESS9wHakwo",
+                          "currentBet": 265531400000000030000,
+                          "userId": "0x1234567890asdfghjkl0987654321",
+                          "fees": 5,
+                          "txnId": "0x0987654321asdfghkloi084659839djdndie9efmckdieu858t0fkdme7uejdid9",
+                          "createdAt": "2024-07-29T09:20:36.933Z",
+                          "updatedAt": "2024-07-29T09:22:48.950Z",
+                          "__v": 0
+                        }
+                      ],
+                      "noOfBets": 2,
+                      "volume": 285531400000000030000
+                    }
+                  ],
+                  "total": 6
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/contract/totalTraded": {
+      "get": {
+        "tags": [
+          "Contract"
+        ],
+        "summary": "Retrieves the total traded amount of the user",
+        "description": "Retrieves the total traded amount of the user",
+        "parameters": [
+          {
+            "name": "user-agent",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "examples": {
+              "application/json": {
+                "message": "Fetch events successfully",
+                "data": {
+                  "total": 2467
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/contract/volumeTraded": {
+      "get": {
+        "tags": [
+          "Contract"
+        ],
+        "summary": "Retrieves the total volume traded by the user",
+        "description": "Retrieves the total volume traded by the user",
+        "parameters": [
+          {
+            "name": "user-agent",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "examples": {
+              "application/json": {
+                "message": "Fetch events successfully",
+                "data": {
+                  "volumeTraded": 240000000000000000000
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/contract/netPosition": {
+      "get": {
+        "tags": [
+          "Contract"
+        ],
+        "summary": "Retrieves the profile and loss of the user",
+        "description": "Retrieves the profile and loss of the user",
+        "parameters": [
+          {
+            "name": "user-agent",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "examples": {
+              "application/json": {
+                "message": "Fetch events successfully",
+                "data": {
+                  "netPosition": 236.09
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/contract/getEventDetails": {
+      "get": {
+        "tags": [
+          "Contract"
+        ],
+        "summary": "Retrieves the details of a specific event",
+        "description": "Retrieves the details of a specific event",
+        "parameters": [
+          {
+            "name": "eventId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/contract/totalBetOnEvent": {
+      "get": {
+        "tags": [
+          "Contract"
+        ],
+        "summary": "Retrieves the total bet on the event",
+        "description": "Retrieves the total bet on the event",
+        "parameters": [
+          {
+            "name": "eventId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "examples": {
+              "application/json": {
+                "message": "Fetch events successfully",
+                "data": {
+                  "eventsDetails": [
+                    {
+                      "_id": "66a73b0e6728373f95d47c76",
+                      "eventId": "QmRSwyf7sj9MDvjT9PZh4Ddo1WVpfnkwejtowjwet",
+                      "txnId": "0xd10a3813134b2b17d25fdba266c5ff46c6473ae178755cbdf9d5a430a1f878aa",
+                      "userId": "0x1234567890abcdef1234567890abcdef12345678",
+                      "currencyType": "BNB",
+                      "priceLevel": 656,
+                      "targetDateTime": "1722324587",
+                      "bettingClosureTime": "1722324527",
+                      "eventDuration": "1722234930",
+                      "resolutionSource": "https://example.com/currencies/",
+                      "resolver": "resolver123",
+                      "status": 1,
+                      "eventExpireTime": "30-07-24 07:29",
+                      "createdAt": "2024-07-29T06:47:42.544Z",
+                      "updatedAt": "2024-07-29T06:47:42.544Z",
+                      "currencyDetails": {
+                        "name": "BNB",
+                        "symbol": "BNB",
+                        "precision": 4,
+                        "price": 568.63
+                      },
+                      "sign": "negative",
+                      "totalNoOfBet": 3,
+                      "percentageDifference": 13.31859756097561
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/currency/getTopMarket": {
+      "get": {
+        "tags": [
+          "Currency"
+        ],
+        "summary": "Get the top currencies in the market.",
+        "description": "Get the top currencies in the market.",
+        "responses": {
+          "default": {
+            "description": "",
+            "examples": {
+              "application/json": {
+                "message": "Fetch data successfully",
+                "data": {
+                  "Currency": [
+                    {
+                      "_id": "66995e5b617c2e936263a9b",
+                      "name": "Bitcoin",
+                      "iconUrl": "https://example.com/coins/btc.svg",
+                      "symbol": "BTC",
+                      "precision": 4,
+                      "price": 62226.828499217336,
+                      "positions": 2,
+                      "explorerAddressUrl": "null",
+                      "explorerTxnIdUrl": "null"
+                    },
+                    {
+                      "_id": "972125tft362yw3262wy2w63",
+                      "name": "Ethereum",
+                      "iconUrl": "https://example.com/coins/eth.svg",
+                      "symbol": "ETH",
+                      "precision": 4,
+                      "price": 3153.816785083406,
+                      "positions": 2,
+                      "explorerAddressUrl": "null",
+                      "explorerTxnIdUrl": "null"
+                    },
+                    {
+                      "_id": "66995fe6we36362t2set3wd3",
+                      "name": "BNB",
+                      "iconUrl": "https://example.com/coins/bnb.svg",
+                      "symbol": "BNB",
+                      "precision": 4,
+                      "price": 568.63,
+                      "positions": 2,
+                      "explorerAddressUrl": "null",
+                      "explorerTxnIdUrl": "null"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/currency/getCurrentPrice": {
+      "get": {
+        "tags": [
+          "Currency"
+        ],
+        "summary": "Get the current price of a currency.",
+        "description": "Get the current price of a currency.",
+        "parameters": [
+          {
+            "name": "this.path",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "coin",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "examples": {
+              "application/json": {
+                "message": "Fetch data successfully",
+                "data": {
+                  "Currency": {
+                    "_id": "66995ebc617c2e98ca413a9d",
+                    "name": "Ethereum",
+                    "symbol": "ETH",
+                    "precision": 4,
+                    "price": 3153.816785083406
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/dispute/raiseDispute": {
+      "post": {
+        "tags": [
+          "Dispute"
+        ],
+        "summary": "raise a dispute on event",
+        "description": "raise a dispute on event",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "walletAddress": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "examples": {
+              "application/json": {
+                "message": "Save Successfully",
+                "data": {
+                  "userId": "0x1234567890abcdef1234567890abcdef12345678",
+                  "eventId": "QmQDBKquXknb5BGD9DAvTHVP4bVg8eCQ7buESS9wHakwo",
+                  "category": "Other",
+                  "email": "abc@example.com",
+                  "status": "closed",
+                  "description": "Numquam blanditiis harum quisquam eius sed odit fugiat iusto fuga praesentium",
+                  "evidenceUrl": [
+                    "QmUKFM46Yc4Fz12ZaoaGQAKEziF4GQa30itjf3p5803603",
+                    "QmNwCvHiZ1RtiJWRtq68c493aWA2rnfnwoi3u5rj293ras"
+                  ],
+                  "_id": "66aca46b3d4eb7777dwwtt3g",
+                  "createdAt": "2024-08-02T09:18:35.791Z",
+                  "updatedAt": "2024-08-02T09:18:35.791Z",
+                  "__v": 0
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      }
+    },
+    "/api/dispute/getDispute": {
+      "get": {
+        "tags": [
+          "Dispute"
+        ],
+        "summary": "Get dispute details with filters",
+        "description": "Get dispute details with filters",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "examples": {
+              "application/json": {
+                "message": "Fetch data successfully",
+                "data": {
+                  "dispute": [
+                    {
+                      "_id": "66aca46b3d4eb7777dc8ef37",
+                      "userId": "0x1234567890abcdef1234567890abcdef12345678",
+                      "eventId": "QmbpdnVJoNmRaY1oDdmxpRX9m1XUNC85HBHgqzh7jd0373",
+                      "category": "Other",
+                      "email": "abc@example.com",
+                      "status": "closed",
+                      "description": "Numquam blanditiis harum quisquam eius sed odit fugiat iusto fuga praesentium",
+                      "evidenceUrl": [
+                        "QmUKFM46Yc4Fz12ZaoaGQAKEziF4GQa30itjf3p5803603",
+                        "QmNwCvHiZ1RtiJWRtq68c493aWA2rnfnwoi3u5rj293ras"
+                      ],
+                      "createdAt": "2024-08-02T09:18:35.791Z",
+                      "updatedAt": "2024-08-02T09:18:35.791Z",
+                      "__v": 0
+                    }
+                  ],
+                  "total": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/dispute/getDisputeEvent": {
+      "get": {
+        "tags": [
+          "Dispute"
+        ],
+        "summary": "Get dispute event details",
+        "description": "Get dispute event details",
+        "parameters": [
+          
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "examples": {
+              "application/json": {
+                "message": "Fetch data successfully",
+                "data": [
+                  {
+                    "_id": "66a354d155d18211e816bb280",
+                    "eventId": "QmQW5sokLVK5WeLGnJkwN8dDV5FBrHAnjYTuhzYI79YH",
+                    "userId": "0x1234567890abcdef1234567890abcdef12345678",
+                    "targetDateTime": "1722068986",
+                    "eventDuration": "1721980110",
+                    "eventExpireTime": "27-07-24 08:29",
+                    "createdAt": "2024-07-26T07:48:33.392Z",
+                    "updatedAt": "2024-07-27T08:29:00.796Z",
+                    "eventResultTime": "1-08-24 11:40",
+                    "ordersDetails": [
+                      {
+                        "amount": 10000000000000000000,
+                        "updatedAt": "2024-07-26T09:19:45.475Z"
+                      },
+                      {
+                        "amount": 20000000000000000000,
+                        "updatedAt": "2024-07-26T09:19:45.475Z"
+                      },
+                      {
+                        "amount": 30000000000000000000,
+                        "updatedAt": "2024-07-26T09:19:45.475Z"
+                      },
+                      {
+                        "amount": 40000000000000000000,
+                        "updatedAt": "2024-07-26T09:19:45.475Z"
+                      },
+                      {
+                        "amount": 50000000000000000000,
+                        "updatedAt": "2024-07-26T09:19:45.475Z"
+                      },
+                      {
+                        "amount": 62000000000000000000,
+                        "updatedAt": "2024-07-26T09:19:45.475Z"
+                      },
+                      {
+                        "amount": 10000000000000000000,
+                        "updatedAt": "2024-07-26T09:20:21.486Z"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/connect-wallet": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Connect the user wallet",
+        "description": "Connect the user wallet",
+        "responses": {
+          "default": {
+            "description": "User Login successfully.",
+            "example": {
+              "application/json": {
+                "message": "Signup success",
+                "data": {
+                  "wallet_address": "0x1234567890lllkjhgfds098765432q1"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      }
+    },
+    "/api/user/upload-profile": {
+      "put": {
+        "tags": [
+          "User"
+        ],
+        "summary": "upload user profile picture and username",
+        "description": "upload user profile picture and username",
+        
+        "parameters": [
+          {
+            "name": "file",
+            "in": "formData",
+            "type": "file",
+            "description": "User profile picture"
+          },
+          {
+            "name": "userName",
+            "in": "formData",
+            "type": "string",
+            "description": "User's username"
+          },
+          {
+            "name": "alephId",
+            "in": "formData",
+            "type": "string",
+            "description": "User's alephId"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "It updates the profile of user",
+            "example": {
+              "application/json": {
+                "message": "Updated successfully"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/getTotalEventCreators": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "gets the total event creators",
+        "description": "gets the total event creators",
+        "responses": {
+          "default": {
+            "description": "",
+            "examples": {
+              "application/json": {
+                "message": "Fetch data successfully",
+                "data": {
+                  "totalCreators": 186
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/getTotalUser": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "gets the total users",
+        "description": "gets the total users",
+        "responses": {
+          "default": {
+            "description": "",
+            "examples": {
+              "message": "Fetch user data successfully",
+              "data": {
+                "totalUsers": 246
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/getTotalVolume": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "gets the total volume ",
+        "description": "gets the total volume ",
+        "responses": {
+          "default": {
+            "description": "",
+            "examples": {
+              "message": "Fetch data successfully",
+              "data": {
+                "totalVolume": 799.5314
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/get-profile": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "gets the user profile",
+        "description": "gets the user profile",
+        "parameters": [
+          {
+            "name": "user-agent",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "examples": {
+              "message": "Fetch user data successfully",
+              "data": {
+                "userCheckdata": {
+                  "_id": "66ac8d6f9398b432340ce864",
+                  "ensId": null,
+                  "fullUserName": null,
+                  "userName": "username1",
+                  "walletAddress": "0x12345678900poiuytrrewq0987654321",
+                  "email": null,
+                  "role": "user",
+                  "status": "true",
+                  "profilePicture": {
+                    "small": "https://example.com/example.jpeg/098776544321/small%7D",
+                    "medium": "https://example.com/example.jpeg/098776544321//medium%7D",
+                    "large": "hhttps://example.com/example.jpeg/098776544321//large%7D"
+                  },
+                  "password": null,
+                  "createdAt": "2024-08-02T07:40:31.370Z",
+                  "updatedAt": "2024-08-02T07:43:37.952Z",
+                  "__v": 0
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/logout": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "user logout",
+        "description": "user logout ",
+        "responses": {
+          "default": {
+            "description": "",
+            "examples": {
+              "application/json": {
+                "message": "Logout Successfull"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

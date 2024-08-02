@@ -120,6 +120,10 @@ To set up the project follow the instructions:
    npm run dev
    ```  
 
+### Docs
+ You can access the api docs at:
+   * Swagger UI -  `/api-docs`
+
 <!-- LICENSE -->
 ## License
 
@@ -131,6 +135,7 @@ Distributed under the Apache License. See `LICENSE.txt` for more information.
 
 * [Typescript](https://www.typescriptlang.org/)
 * [Web3](https://web3js.readthedocs.io/en/v1.10.0/)
+* [Swagger](https://swagger.io/docs/)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
