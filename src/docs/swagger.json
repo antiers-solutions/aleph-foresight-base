@@ -1017,6 +1017,35 @@
         }
       }
     },
+    "/api/contract/payout":{
+      "get":{
+        "tags":["Contract"],
+        "summary":"Retrieves the net and gross payout of the user",
+        "description": "Retrieves the net and gross payout of the user",
+        "parameters":[
+          {
+            "name": "eventId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses":{
+          "default":{
+            "description":"Returns the gross payout , net payout and platform fee",
+            "examples":{
+              "application/json":{
+                "message": "Fetch events successfully",
+                "data": {
+                    "grossPayout": 0.00003,
+                    "netPayout": 0.000009499999999999999,
+                    "platformFees": 5
+                }
+            }
+            }
+          }
+        }
+      }
+    },
     "/api/currency/getTopMarket": {
       "get": {
         "tags": [

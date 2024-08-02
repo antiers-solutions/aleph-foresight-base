@@ -491,6 +491,62 @@ class MongoDataHelper {
       }
    };
    /**
+    * finds all the event creators on the platform for admin
+    * @param name 
+    * @param query 
+    * @param sort 
+    * @param skip 
+    * @param limit 
+    * @returns 
+    */
+   public eventOdds = async (
+      name: string,
+      query: object,
+      //sort: any = {},
+   ) => {
+      try {
+         this._checkModel(name);
+         const Model = this._getModel(name);
+         //Aggregation pipeline
+         const pipeline = [
+           { $match: query },
+            {
+               $lookup: {
+                  from: 'events', // Collection name to join
+                  localField: 'eventId', // Field from the current collection
+                  foreignField: 'eventId', // Field from the events collection
+                  as: 'eventDetails', // Alias for joined data
+               },
+            },
+            {
+               $match: {
+                  'eventDetails.odds': { $ne: null },// Filter out documents where odds is undefined or null
+                  'eventDetails.status':0
+               }
+            },
+            {
+               $project: {
+                  eventId: 1,
+                  amount:1,
+                  settlement:1,
+                  odds: {
+                     $first:'$eventDetails.odds'
+                  }, // Include only the odds array from eventDetails
+                  platformFees:{
+                     $first: '$eventDetails.platformFees'
+                  }
+               },
+            },
+
+         ];
+         const results = await Model.aggregate(pipeline).exec();
+         return results;
+      } catch (err) {
+         log.red(ERROR_MESSAGE.FIND_ALL_ERR, err.message);
+         return null;
+      }
+   };
+   /**
     * Finds all closed  and open position (events) 
     * @param name 
     * @param query 

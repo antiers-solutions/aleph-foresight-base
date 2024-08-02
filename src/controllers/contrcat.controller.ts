@@ -23,6 +23,7 @@ class ContractController implements Controller {
     this.router.get(`${this.path}/netPosition`,sessionCheck,this.netPosition);
     this.router.get(`${this.path}/getEventDetails`,sessionCheck,this.getEventDetails);
     this.router.get(`${this.path}/totalBetOnEvent`,sessionCheck,this.totalBetOnEvent);
+    this.router.get(`${this.path}/payout`,sessionCheck,this.payout);
   };
   /**
    * Creates an IPFS URL
@@ -164,6 +165,18 @@ class ContractController implements Controller {
     const totalBetOnEvent:object = await contractHelper.totalBetOnEvent(eventId);
     return sendResponse(res, totalBetOnEvent);
   };
+  /**
+   * Retrieves the payout on the event
+   * @param req 
+   * @param res 
+   * @returns 
+   */
+  private payout = async(req:Request,res:Response) =>{
+    const userAddress = String(req.body.walletAddress);
+    const eventId = String(req.query.eventId);
+    const payoutEvent:object = await contractHelper.payout(userAddress,eventId);
+    return sendResponse(res, payoutEvent);
+  }
 }
 
 export default ContractController;

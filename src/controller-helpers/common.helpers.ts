@@ -55,7 +55,20 @@ async function isTokenExpired(token) {
   return value ? false : true
 
 }
-
+/**
+ * Calculates gross payout and net payout
+ * @param amount 
+ * @param odds 
+ * @param platformFees 
+ * @returns {grossPayout, netPayout}
+ */
+const calculatePayout = (amount: number, odds: number, platformFees: number) => {
+  const grossPayout = (amount * (odds / 100)) / 10 ** 18;
+  const reward = grossPayout - (amount / 10 ** 18);
+  const deductionFees = reward * (platformFees / 100);
+  const netPayout = reward - deductionFees;
+  return { grossPayout, netPayout };
+};
 
 const RESPONSE = {
   USER_NOT_FOUND: {
@@ -78,5 +91,5 @@ const RESPONSE = {
 };
 
 module.exports = {
-  getPaginationParams, getAdminAddress, RESPONSE, isTokenExpired
+  getPaginationParams, getAdminAddress, RESPONSE, isTokenExpired,calculatePayout
 };

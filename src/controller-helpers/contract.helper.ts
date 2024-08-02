@@ -1,6 +1,6 @@
 import { Response } from "express";
 import { create } from "ipfs-http-client";
-const { getPaginationParams, RESPONSE } = require("./common.helpers");
+const { getPaginationParams, RESPONSE ,calculatePayout} = require("./common.helpers");
 import { STATUS_CODES, RESPONSE_MESSAGES, DATA_MODELS, UNDEFINED } from "../constants";
 import mongoDataHelper from "../helpers/mongo.data.helper";
 import { RESPONSE_MESSAGE }  from "../constants/contract.constant";
@@ -480,6 +480,36 @@ class ContractHelper {
       } else {
         return RESPONSE.USER_NOT_FOUND;
       }
+    } catch (error) {
+      return RESPONSE.INTERNAL_SERVER_ERROR;
+    }
+  };
+  /**
+   * helper function to get gross payout and net payout 
+   * @param res
+   * @param payload
+   * @returns
+   */
+  public payout = async (userAddress:string,eventId:string) => {
+    try {
+      const userCreateEvnt = await mongoDataHelper.eventOdds(
+        DATA_MODELS.Order,
+        {userId:userAddress,eventId:eventId,result:1}
+      )
+      if (!userCreateEvnt.length) {
+        return RESPONSE.USER_NOT_FOUND;
+      }
+      const platformFees = userCreateEvnt[0]?.platformFees;
+      const isSettlementYes = userCreateEvnt[0]?.settlement === 'Yes';
+      const odds = userCreateEvnt[0]?.odds[isSettlementYes ? 0 : 1];
+      const amount = userCreateEvnt[0]?.amount;
+      const { grossPayout, netPayout } = calculatePayout(amount, odds, platformFees);
+      return {
+        error: false,
+        data: { grossPayout, netPayout, platformFees },
+        status: STATUS_CODES.SUCCESS,
+        message: RESPONSE_MESSAGES.FETCH_EVENTSDATA_SUCCESS,
+      };
     } catch (error) {
       return RESPONSE.INTERNAL_SERVER_ERROR;
     }
