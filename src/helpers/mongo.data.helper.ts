@@ -519,12 +519,6 @@ class MongoDataHelper {
                },
             },
             {
-               $match: {
-                  'eventDetails.odds': { $ne: null },// Filter out documents where odds is undefined or null
-                  'eventDetails.status':0
-               }
-            },
-            {
                $project: {
                   eventId: 1,
                   amount:1,

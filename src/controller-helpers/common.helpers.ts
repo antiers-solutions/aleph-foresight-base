@@ -66,7 +66,7 @@ const calculatePayout = (amount: number, odds: number, platformFees: number) => 
   const grossPayout = (amount * (odds / 100)) / 10 ** 18;
   const reward = grossPayout - (amount / 10 ** 18);
   const deductionFees = reward * (platformFees / 100);
-  const netPayout = reward - deductionFees;
+  const netPayout = grossPayout - deductionFees;
   return { grossPayout, netPayout };
 };
 
