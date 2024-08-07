@@ -9,17 +9,17 @@ import {
   bufferToHex,
   pubToAddress
 } from "ethereumjs-util";
+import { ESResponse } from "@interfaces";
+import { ApiResponse } from "interfaces/user.helpers.interface";
+const { getAdminAddress, RESPONSE } = require("./common.helpers");
+import mongoDataHelper from "../helpers/mongo.data.helper";
+import redisHelper from "../helpers/redis.helper";
 import {
   STATUS_CODES,
   RESPONSE_MESSAGES,
   DATA_MODELS,
   REDIS_VARIABLES,
 } from "../constants";
-import { ESResponse } from "@interfaces";
-import { ApiResponse } from "interfaces/user.helpers.interface";
-const { getAdminAddress, RESPONSE } = require("./common.helpers");
-import mongoDataHelper from "../helpers/mongo.data.helper";
-import redisHelper from "../helpers/redis.helper";
 import { ROLE, REDIS_EX_TIME } from "../constants/user.constant";
 AWS.config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -27,6 +27,7 @@ AWS.config.update({
   region: process.env.S3_REGION, // e.g., 'us-east-1'
 });
 const s3 = new AWS.S3();
+
 class UserHelper {
   constructor() {
     (async () => { })();
@@ -82,7 +83,7 @@ class UserHelper {
       );
       if (isSignatureValid?.isAddress) {
         const token = uuidv4()
-        const role = adminAddress.toLocaleLowerCase() == isSignatureValid?.recoveredAddress.toLocaleLowerCase() ? ROLE.ADMIN : ROLE.USER;
+        const role = ROLE.USER;
         const setData = {
           signerAddress,
           role,
@@ -229,18 +230,13 @@ class UserHelper {
   public getTotalEventCreators = async (
   ) => {
     try {
-      const creators = await mongoDataHelper.findTotalEventCreators(
-        DATA_MODELS.User,
-        {},
+      const totalCreators = await mongoDataHelper.findTotalEventCreators(
+        DATA_MODELS.Events,
       );
-      if (creators==null){
-        return RESPONSE.DATA_NOT_FOUND;
-      }
-      const totalCreators = creators.length;
-      if (creators) {
+      if (totalCreators) {
         return {
           error: false,
-          data: { totalCreators },
+          data: { totalCreators:totalCreators } ,
           status: STATUS_CODES.SUCCESS,
           message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS,
         };
