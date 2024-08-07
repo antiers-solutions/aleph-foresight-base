@@ -77,7 +77,7 @@ const RESPONSE = {
   USER_NOT_FOUND: {
     error: false,
     data: null,
-    status: STATUS_CODES.SUCCESS,
+    status: STATUS_CODES.NOCONTENT,
     message: RESPONSE_MESSAGES.DATA_NOT_FOUND,
   },
   INTERNAL_SERVER_ERROR: {
