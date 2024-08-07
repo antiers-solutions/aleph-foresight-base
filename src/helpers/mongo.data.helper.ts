@@ -1169,21 +1169,20 @@ class MongoDataHelper {
     * @param query 
     * @returns 
     */
-   public findTotalEventCreators = async (name: string, query: object) => {
+   public findTotalEventCreators = async (name: string) => {
       try {
          this._checkModel(name);
          const Model = this._getModel(name);
          const pipeline = [
-            { $match: query },
             {
-               $group: {
-                  _id: '$userId',
-                  count: { $sum: 1 },
-               },
-            },
+               $group:{
+                  _id: "$userId",
+                  count: { $sum:1 },
+               }
+            }
          ];
-         const results = await Model.aggregate(pipeline).exec();
-         return results;
+         const results = await Model.aggregate(pipeline).count(name).exec();
+         return results[0].Events;
       } catch (err) {
          log.red(ERROR_MESSAGE.FIND_ALL_ERR, err.message);
          return null;
