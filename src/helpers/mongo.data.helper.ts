@@ -856,6 +856,7 @@ class MongoDataHelper {
                $project: {
                   eventId: '$eventId',
                   txnId: '$txnId',
+                  userId:'$userId',
                   status: '$status',
                   targetDateTime: '$targetDateTime',
                   createdAt: '$createdAt',
@@ -1358,7 +1359,7 @@ class MongoDataHelper {
             return modelsObejct.Dispute;
          case DATA_MODELS.Order:
             return modelsObejct.Order;
-         case DATA_MODELS.Trasaction:
+         case DATA_MODELS.Transaction:
             return modelsObejct.Transaction;
          default:
             return null;

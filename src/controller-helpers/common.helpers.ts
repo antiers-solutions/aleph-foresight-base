@@ -1,13 +1,13 @@
 import Web3 from "web3";
+import contractAbi from "../contract/contractabi";
+import redisHelper from "../helpers/redis.helper";
+import { RESPONSE_MESSAGES, STATUS_CODES } from "../constants";
 const wsProvider = new Web3.providers.WebsocketProvider(
   process.env.SOCKET_HOST
 );
-import { RESPONSE_MESSAGES, STATUS_CODES } from "../constants";
 const web3 = new Web3(wsProvider);
 const contractAddress = process.env.CONTRACTADDRESS;
-import contrcatAbi from "../contract/contractabi";
-import redisHelper from "../helpers/redis.helper";
-const contract = new web3.eth.Contract(contrcatAbi, contractAddress);
+const contract = new web3.eth.Contract(contractAbi, contractAddress);
 
 /**
  * Validates and calculates pagination parameters.
@@ -35,7 +35,7 @@ const getPaginationParams = (
 /**
  * get admin address from the contract
  * @returns admin address
-*/
+ */
 const getAdminAddress = async () => {
   try {
     const adminAddress = await contract.methods.read_admin_address().call();
@@ -52,19 +52,22 @@ const getAdminAddress = async () => {
 async function isTokenExpired(token) {
   const value = JSON.parse(await redisHelper.client.get(token));
 
-  return value ? false : true
-
+  return value ? false : true;
 }
 /**
  * Calculates gross payout and net payout
- * @param amount 
- * @param odds 
- * @param platformFees 
+ * @param amount
+ * @param odds
+ * @param platformFees
  * @returns {grossPayout, netPayout}
  */
-const calculatePayout = (amount: number, odds: number, platformFees: number) => {
+const calculatePayout = (
+  amount: number,
+  odds: number,
+  platformFees: number
+) => {
   const grossPayout = (amount * (odds / 100)) / 10 ** 18;
-  const reward = grossPayout - (amount / 10 ** 18);
+  const reward = grossPayout - amount / 10 ** 18;
   const deductionFees = reward * (platformFees / 100);
   const netPayout = grossPayout - deductionFees;
   return { grossPayout, netPayout };
@@ -74,7 +77,7 @@ const RESPONSE = {
   USER_NOT_FOUND: {
     error: false,
     data: null,
-    status: STATUS_CODES.SUCCESS,
+    status: STATUS_CODES.NOTFOUND,
     message: RESPONSE_MESSAGES.USER_NOT_FOUND,
   },
   INTERNAL_SERVER_ERROR: {
@@ -82,14 +85,18 @@ const RESPONSE = {
     status: STATUS_CODES.INTERNALSERVER,
     message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR,
   },
-  DATA_NOT_FOUND:{
+  DATA_NOT_FOUND: {
     error: false,
     data: null,
-    status: STATUS_CODES.SUCCESS,
+    status: STATUS_CODES.NOTFOUND,
     message: RESPONSE_MESSAGES.DATA_NOT_FOUND,
-  }
+  },
 };
 
 module.exports = {
-  getPaginationParams, getAdminAddress, RESPONSE, isTokenExpired,calculatePayout
+  getPaginationParams,
+  getAdminAddress,
+  RESPONSE,
+  isTokenExpired,
+  calculatePayout,
 };

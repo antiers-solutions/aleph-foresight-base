@@ -1,10 +1,11 @@
-import { STATUS_CODES, RESPONSE_MESSAGES, DATA_MODELS } from "../constants";
 const { RESPONSE } = require("./common.helpers");
 import mongoDataHelper from "../helpers/mongo.data.helper";
+import { STATUS_CODES, RESPONSE_MESSAGES, DATA_MODELS } from "../constants";
+
 class CurrencyHelper {
   /**
    * get all the top currency in the market
-   * @returns 
+   * @returns
    */
   public getTopMarket = async () => {
     try {
@@ -26,12 +27,12 @@ class CurrencyHelper {
   /**
    * get the current price of the currency
    * @param coin
-   * @returns 
+   * @returns
    */
-  public getCurrentPrice = async (coin:string) => {
+  public getCurrentPrice = async (coin: string) => {
     try {
       const currency = await mongoDataHelper.findPrice(DATA_MODELS.Currency, {
-        symbol: coin
+        symbol: coin,
       });
       if (currency) {
         return {

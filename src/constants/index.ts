@@ -5,7 +5,7 @@ export const DATA_MODELS = {
   Dispute: "Dispute",
   Events: "Events",
   Order: "Order",
-  Trasaction: "Trasaction",
+  Transaction: "Transaction",
 };
 
 export const STATUS = {

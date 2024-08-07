@@ -1,25 +1,31 @@
 import { Response } from "express";
-import { 
+import {
   ecrecover,
   fromRpcSig,
   keccak256,
   bufferToHex,
-  pubToAddress, 
+  pubToAddress,
 } from "ethereumjs-util";
 import { v4 as uuidv4 } from "uuid";
-import { STATUS_CODES, RESPONSE_MESSAGES, DATA_MODELS } from "../constants/";
-const { getPaginationParams, getAdminAddress, RESPONSE } = require("./common.helpers");
+import { ApiResponse } from "interfaces/user.helpers.interface";
+const {
+  getPaginationParams,
+  getAdminAddress,
+  RESPONSE,
+} = require("./common.helpers");
 import mongoDataHelper from "../helpers/mongo.data.helper";
 import redisHelper from "../helpers/redis.helper";
+import { STATUS_CODES, RESPONSE_MESSAGES, DATA_MODELS } from "../constants/";
 import { ADMIN_LOGIN, REDIS_EX_TIME } from "../constants/admin.constant";
-import { ApiResponse } from "interfaces/user.helpers.interface";
+
 class AdminHelper {
   /**
-   * helper function to get the list of all the users 
+   * helper function to get the list of all the users
    * @param res
    * @param payload
    * @returns
    */
+
   public getUser = async (
     res: Response,
     payload: {
@@ -52,7 +58,7 @@ class AdminHelper {
     }
   };
   /**
-   * helper function to get all the event creators 
+   * helper function to get all the event creators
    * @param res
    * @param payload
    * @returns
@@ -89,7 +95,7 @@ class AdminHelper {
     }
   };
   /**
-   * helper function to get the list of all the closed events 
+   * helper function to get the list of all the closed events
    * @param res
    * @param payload
    * @returns
@@ -190,7 +196,8 @@ class AdminHelper {
         const address = bufferToHex(addressBuffer);
         // Compare the provided public key with the address(ethereum address)
         return {
-          isAddress: address.toLocaleLowerCase() === publicKey.toLocaleLowerCase(),
+          isAddress:
+            address.toLocaleLowerCase() === publicKey.toLocaleLowerCase(),
           address,
         };
       };
@@ -263,7 +270,7 @@ class AdminHelper {
     }
   };
   /**
-   * helper function to get the total transactions on the platform 
+   * helper function to get the total transactions on the platform
    * @param res
    * @param payload
    * @returns
@@ -278,7 +285,7 @@ class AdminHelper {
         DATA_MODELS.Order,
         {}
       );
-      if (orderTransactions==null && eventTransactions==null){
+      if (orderTransactions == null && eventTransactions == null) {
         return RESPONSE.DATA_NOT_FOUND;
       }
       const transactionData = eventTransactions + orderTransactions;
@@ -295,9 +302,9 @@ class AdminHelper {
     } catch (error) {
       return RESPONSE.INTERNAL_SERVER_ERROR;
     }
-  }; 
+  };
   /**
-   * helper function to get total events on the platform 
+   * helper function to get total events on the platform
    * @param res
    * @param payload
    * @returns
@@ -309,7 +316,7 @@ class AdminHelper {
         DATA_MODELS.Events,
         { status: 1 }
       );
-      if (eventsData==null && activeEventsData==null){
+      if (eventsData == null && activeEventsData == null) {
         return RESPONSE.DATA_NOT_FOUND;
       }
       const total = eventsData.length;
@@ -340,7 +347,7 @@ class AdminHelper {
       if (total) {
         return {
           error: false,
-          data: {total },
+          data: { total },
           status: STATUS_CODES.SUCCESS,
           message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS,
         };
@@ -352,7 +359,7 @@ class AdminHelper {
     }
   };
   /**
-   * helper function to get list of all the raised disputes 
+   * helper function to get list of all the raised disputes
    * @param res
    * @param payload
    * @returns

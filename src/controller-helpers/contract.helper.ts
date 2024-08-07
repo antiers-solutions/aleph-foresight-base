@@ -1,9 +1,18 @@
 import { Response } from "express";
 import { create } from "ipfs-http-client";
-const { getPaginationParams, RESPONSE ,calculatePayout} = require("./common.helpers");
-import { STATUS_CODES, RESPONSE_MESSAGES, DATA_MODELS, UNDEFINED } from "../constants";
+const {
+  getPaginationParams,
+  RESPONSE,
+  calculatePayout,
+} = require("./common.helpers");
 import mongoDataHelper from "../helpers/mongo.data.helper";
-import { RESPONSE_MESSAGE }  from "../constants/contract.constant";
+import {
+  STATUS_CODES,
+  RESPONSE_MESSAGES,
+  DATA_MODELS,
+  UNDEFINED,
+} from "../constants";
+import { RESPONSE_MESSAGE } from "../constants/contract.constant";
 const ipfs = create({
   url: process.env.IPFSURL,
 });
@@ -11,7 +20,7 @@ const ipfs = create({
 class ContractHelper {
   /**
    * helper function to create IPFS url
-   * @param res 
+   * @param res
    * @param payload
    * @returns
    */
@@ -27,7 +36,7 @@ class ContractHelper {
       const data = {
         name: payload.eventName,
         price: payload.price,
-        timestamp: payload.timeStamp
+        timestamp: payload.timeStamp,
       };
       const jsonData = JSON.stringify(data);
       // Add the JSON string to IPFS
@@ -41,10 +50,10 @@ class ContractHelper {
     } catch (error) {
       return RESPONSE.INTERNAL_SERVER_ERROR;
     }
-  }; 
+  };
   /**
    *  helper function to get all the events on platform
-   * @param res 
+   * @param res
    * @param payload
    * @returns
    */
@@ -83,8 +92,8 @@ class ContractHelper {
           sortOptions.priceLevel = -1; // Default sorting by priceLevel in descending order
           break;
         case "volume":
-          sortOptions.totalVolume = -1;//Events based on totalvolume, descending order based on total volume on event
-          break;  
+          sortOptions.totalVolume = -1; //Events based on totalvolume, descending order based on total volume on event
+          break;
         case undefined:
         default:
           sortOptions.createdAt = -1; // Default sorting by creation date in descending order
@@ -114,20 +123,20 @@ class ContractHelper {
   };
   /**
    * helper function to get details of an event
-   * @param res 
+   * @param res
    * @param payload
    * @returns
    */
   public getEventDetails = async (
     res: Response,
-    payload: { eventId: string; }
+    payload: { eventId: string }
   ) => {
     try {
       const eventsDetails = await mongoDataHelper.findEventPrice(
         DATA_MODELS.Events,
         {
           eventId: payload.eventId,
-        },
+        }
       );
       if (eventsDetails) {
         return {
@@ -144,51 +153,54 @@ class ContractHelper {
     }
   };
   /**
-   * helper function to get orders (activity) of users 
-   * @param res 
+   * helper function to get orders (activity) of users
+   * @param res
    * @param payload
    * @returns
    */
   public getOrder = async (
     res: Response,
-    payload: { 
-      page: number; 
-      limit: number; 
-      userAddress: string; 
-      filter:string 
+    payload: {
+      page: number;
+      limit: number;
+      userAddress: string;
+      filter: string;
     }
   ) => {
     try {
       const { page, limit, userAddress, filter } = payload;
       const { skip, limitValue } = getPaginationParams(page, limit);
       // query to get order[activity] of a specific user and all users
-      let query = userAddress != UNDEFINED ? { userId: userAddress.toLocaleLowerCase() } : {};
+      let query =
+        userAddress != UNDEFINED
+          ? { userId: userAddress.toLocaleLowerCase() }
+          : {};
       // filter for queried user
       if (userAddress && filter != UNDEFINED) {
         let status: object = {};
         switch (filter) {
           case "withdraw":
             status = {
-              bidType: "withdraw"
-            }
+              bidType: "withdraw",
+            };
             break;
           case "claimed":
             status = {
-                bidType: "claimed"
-              }
-            break;  
+              bidType: "claimed",
+            };
+            break;
           case "yes":
             status = {
-              bidType: "true"
-            }  
+              bidType: "true",
+            };
             break;
           case "no":
             status = {
-              bidType: "false"
-            }  
+              bidType: "false",
+            };
             break;
         }
-        query = {...query,...status}
+        query = { ...query, ...status };
       }
       const ordersData = await mongoDataHelper.findAllOrdersUser(
         DATA_MODELS.Order,
@@ -247,7 +259,7 @@ class ContractHelper {
         return RESPONSE.USER_NOT_FOUND;
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
       return RESPONSE.INTERNAL_SERVER_ERROR;
     }
   };
@@ -271,11 +283,11 @@ class ContractHelper {
         {
           userId: payload.userAddress.toLocaleLowerCase(),
           eventId: payload.eventId,
-          bidType: 'true'
+          bidType: "true",
         },
         { createdAt: -1 }
       );
-      if (trueOrder==null){
+      if (trueOrder == null) {
         return RESPONSE.DATA_NOT_FOUND;
       }
       // bid on no
@@ -284,33 +296,31 @@ class ContractHelper {
         {
           userId: payload.userAddress.toLocaleLowerCase(),
           eventId: payload.eventId,
-          bidType: 'false'
+          bidType: "false",
         },
         { createdAt: -1 }
       );
-      if (falseOrder==null){
+      if (falseOrder == null) {
         return RESPONSE.DATA_NOT_FOUND;
       }
-      const eventOnBett:Array<Object> = [];
-      if (trueOrder.length){
-        eventOnBett.push(trueOrder[0])
+      const eventOnBett: Array<Object> = [];
+      if (trueOrder.length) {
+        eventOnBett.push(trueOrder[0]);
       }
-      if (falseOrder.length){
-        eventOnBett.push(falseOrder[0])
+      if (falseOrder.length) {
+        eventOnBett.push(falseOrder[0]);
       }
       if (eventOnBett.length) {
-          return {
-            error: false,
-            data: eventOnBett,
-            status: STATUS_CODES.SUCCESS,
-            message: RESPONSE_MESSAGES.FETCH_EVENTSDATA_SUCCESS,
-          };
-        }
-       else {
+        return {
+          error: false,
+          data: eventOnBett,
+          status: STATUS_CODES.SUCCESS,
+          message: RESPONSE_MESSAGES.FETCH_EVENTSDATA_SUCCESS,
+        };
+      } else {
         return RESPONSE.USER_NOT_FOUND;
       }
     } catch (error) {
-      
       return RESPONSE.INTERNAL_SERVER_ERROR;
     }
   };
@@ -322,10 +332,15 @@ class ContractHelper {
    */
   public getUserEvent = async (
     res: Response,
-    payload: { userAddress: string; page: number; limit: number,filter:string }
+    payload: {
+      userAddress: string;
+      page: number;
+      limit: number;
+      filter: string;
+    }
   ) => {
     try {
-      const { page, limit,filter } = payload;
+      const { page, limit, filter } = payload;
       const { skip, limitValue } = getPaginationParams(page, limit);
       const query: any = { userId: payload.userAddress.toLocaleLowerCase() };
       switch (filter) {
@@ -365,9 +380,12 @@ class ContractHelper {
    */
   public totalTraded = async (userAddress: string) => {
     try {
-      const total = await mongoDataHelper.findAllEventTraded(DATA_MODELS.Order, {
-        userId: userAddress,
-      });
+      const total = await mongoDataHelper.findAllEventTraded(
+        DATA_MODELS.Order,
+        {
+          userId: userAddress,
+        }
+      );
       if (total) {
         return {
           error: false,
@@ -393,7 +411,7 @@ class ContractHelper {
       let volumeTraded = await mongoDataHelper.findAllSum(DATA_MODELS.Order, {
         userId: userAddress,
       });
-      if (volumeTraded==null){
+      if (volumeTraded == null) {
         return RESPONSE.DATA_NOT_FOUND;
       }
       volumeTraded = volumeTraded?.volumeTraded;
@@ -419,43 +437,48 @@ class ContractHelper {
    */
   public netPosition = async (userAddress: string) => {
     try {
-       const trueAmountResult = await mongoDataHelper.findSumNetPosition(
-          DATA_MODELS.Order,
-          { userId: userAddress.toLocaleLowerCase() },
-          1
-       );
-       if (trueAmountResult == null) {
-          return RESPONSE.DATA_NOT_FOUND;
-       }
-       const falseAmountResult = await mongoDataHelper.findSumNetPosition(
-          DATA_MODELS.Order,
-          { userId: userAddress.toLocaleLowerCase() },
-          0
-       );
-       if (falseAmountResult == null) {
-          return RESPONSE.DATA_NOT_FOUND;
-       }
-     const totalAmountClaimed = trueAmountResult ? trueAmountResult.totalAmountClaimed : 0;
-     const totalAmount1 = trueAmountResult ? trueAmountResult.totalAmount1 : 0;
-     const totalAmount2 = falseAmountResult ? falseAmountResult.totalAmount2 : 0;
-     // Calculate totalProfit and netPosition
-     const totalProfit = (totalAmountClaimed)/10**18 - (totalAmount1)/10**18;
-     const netPosition = (totalProfit - (totalAmount2)/10**18);
-       if (netPosition || netPosition === 0) {
-          return {
-             error: false,
-             data: { netPosition },
-             status: STATUS_CODES.SUCCESS,
-             message: RESPONSE_MESSAGES.FETCH_EVENTSDATA_SUCCESS,
-          };
-       } else {
-          return RESPONSE.USER_NOT_FOUND;
-       }
+      const trueAmountResult = await mongoDataHelper.findSumNetPosition(
+        DATA_MODELS.Order,
+        { userId: userAddress.toLocaleLowerCase() },
+        1
+      );
+      if (trueAmountResult == null) {
+        return RESPONSE.DATA_NOT_FOUND;
+      }
+      const falseAmountResult = await mongoDataHelper.findSumNetPosition(
+        DATA_MODELS.Order,
+        { userId: userAddress.toLocaleLowerCase() },
+        0
+      );
+      if (falseAmountResult == null) {
+        return RESPONSE.DATA_NOT_FOUND;
+      }
+      const totalAmountClaimed = trueAmountResult
+        ? trueAmountResult.totalAmountClaimed
+        : 0;
+      const totalAmount1 = trueAmountResult ? trueAmountResult.totalAmount1 : 0;
+      const totalAmount2 = falseAmountResult
+        ? falseAmountResult.totalAmount2
+        : 0;
+      // Calculate totalProfit and netPosition
+      const totalProfit =
+        totalAmountClaimed / 10 ** 18 - totalAmount1 / 10 ** 18;
+      const netPosition = totalProfit - totalAmount2 / 10 ** 18;
+      if (netPosition || netPosition === 0) {
+        return {
+          error: false,
+          data: { netPosition },
+          status: STATUS_CODES.SUCCESS,
+          message: RESPONSE_MESSAGES.FETCH_EVENTSDATA_SUCCESS,
+        };
+      } else {
+        return RESPONSE.USER_NOT_FOUND;
+      }
     } catch (error) {
-       return RESPONSE.INTERNAL_SERVER_ERROR;
+      return RESPONSE.INTERNAL_SERVER_ERROR;
     }
- };
- /**
+  };
+  /**
    * helper function to get profit and loss bear by logged in user
    * @param res
    * @param payload
@@ -466,7 +489,7 @@ class ContractHelper {
       const totalNoOfBet = await mongoDataHelper.findAll(DATA_MODELS.Order, {
         eventId: eventId,
       });
-      if (totalNoOfBet==null){
+      if (totalNoOfBet == null) {
         return RESPONSE.DATA_NOT_FOUND;
       }
       const totalBetOnEvent = totalNoOfBet.length;
@@ -485,25 +508,29 @@ class ContractHelper {
     }
   };
   /**
-   * helper function to get gross payout and net payout 
+   * helper function to get gross payout and net payout
    * @param res
    * @param payload
    * @returns
    */
-  public payout = async (userAddress:string,eventId:string) => {
+  public payout = async (userAddress: string, eventId: string) => {
     try {
       const userCreateEvnt = await mongoDataHelper.eventOdds(
         DATA_MODELS.Order,
-        {userId:userAddress,eventId:eventId,result:1}
-      )
+        { userId: userAddress, eventId: eventId, result: 1 }
+      );
       if (!userCreateEvnt.length) {
         return RESPONSE.USER_NOT_FOUND;
       }
       const platformFees = userCreateEvnt[0]?.platformFees;
-      const isSettlementYes = userCreateEvnt[0]?.settlement === 'Yes';
+      const isSettlementYes = userCreateEvnt[0]?.settlement === "Yes";
       const odds = userCreateEvnt[0]?.odds[isSettlementYes ? 0 : 1];
       const amount = userCreateEvnt[0]?.amount;
-      const { grossPayout, netPayout } = calculatePayout(amount, odds, platformFees);
+      const { grossPayout, netPayout } = calculatePayout(
+        amount,
+        odds,
+        platformFees
+      );
       return {
         error: false,
         data: { grossPayout, netPayout, platformFees },

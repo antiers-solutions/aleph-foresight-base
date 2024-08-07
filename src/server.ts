@@ -2,7 +2,7 @@ import * as config from './config';
 const isLoaded = config.loadEnvs();
 import App from './app';
 import UserController from './controllers/user.controller';
-import ContractController from './controllers/contrcat.controller';
+import ContractController from './controllers/contract.controller';
 import dbConnectionHandler from './mongoDB/connection';
 import redisHelper from './helpers/redis.helper';
 import { log } from './utils/helper.utils';
