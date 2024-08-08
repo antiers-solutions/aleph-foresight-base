@@ -38,7 +38,7 @@ class UserController implements Controller {
     this.router.get(`${this.path}/getTotalUser`,  this.getTotalUser);
     this.router.get(`${this.path}/getTotalVolume`,  this.getTotalVolume);
     this.router.get(`${this.path}/get-profile`, sessionCheck, this.getProfile)
-    this.router.get(`${this.path}/logout`, this.userLogout);
+    this.router.get(`${this.path}/logout`,sessionCheck, this.userLogout);
     this.router.get(`${this.path}/me`,sessionCheck,this.me);
   };
 
