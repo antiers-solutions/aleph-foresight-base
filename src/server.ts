@@ -9,7 +9,8 @@ import { log } from './utils/helper.utils';
 import CurrencyController from './controllers/currency.controller';
 import DisputeController from './controllers/dispute.controller';
 import AdminController from './controllers/admin.controller';
-import ERR from '../src/constants/server.constant'
+import ERR from '../src/constants/server.constant';
+import rpcHandlerInstance from './helpers/rpc.helper';
 
 // start the service
 (async () => {
@@ -25,6 +26,8 @@ import ERR from '../src/constants/server.constant'
       // connect to the redis server
       const isRedisConnected = await redisHelper.connectRedis();
       if (!isRedisConnected) throw new Error(ERR.REDIS_CONN);
+
+      rpcHandlerInstance.createRpcConnection();
       // bind the port and listen for requests
      app.listen();
     } else throw new Error(ERR.ENV_NOT_LOADED);

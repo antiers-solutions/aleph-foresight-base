@@ -38,7 +38,8 @@ class UserController implements Controller {
     this.router.get(`${this.path}/getTotalUser`,  this.getTotalUser);
     this.router.get(`${this.path}/getTotalVolume`,  this.getTotalVolume);
     this.router.get(`${this.path}/get-profile`, sessionCheck, this.getProfile)
-    this.router.get(`${this.path}/logout`, this.userLogout);
+    this.router.get(`${this.path}/logout`,sessionCheck, this.userLogout);
+    this.router.get(`${this.path}/me`,sessionCheck,this.me);
   };
 
   /**
@@ -57,8 +58,8 @@ class UserController implements Controller {
     if (userData?.token) {
       res.cookie("token",userData.token, {
         path: "/",
-        httpOnly: true,
-        secure: true,
+        httpOnly: false,
+        secure: false,
         sameSite: "none",
         expires: new Date(Date.now() + (REDIS_EX_TIME.EXPIRE))
       });
@@ -113,7 +114,6 @@ class UserController implements Controller {
    */
   private userLogout = async (req: Request, res: Response) => {
     const token = req.cookies.token;
-
     const check = await userHelper.userLogout(token, res);
     return sendResponse(res, check);
   };
@@ -127,6 +127,17 @@ class UserController implements Controller {
     const walletaddress = req.body.walletAddress;
     const userData: object = await userHelper.getProfileData((walletaddress));
     return sendResponse(res, userData);
+  };
+  /**
+   * gets the user details 
+   * @param req
+   * @param res
+   * @returns
+   */
+  private me = async (req: Request, res: Response) => {
+    const userAddress = String(req.body.walletAddress);
+    const userDetails: object = await userHelper.me(userAddress);
+    return sendResponse(res, userDetails);
   };
 }
 

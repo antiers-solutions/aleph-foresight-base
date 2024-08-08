@@ -124,20 +124,13 @@ public updateRedisTime = async (
 
   /**
    * It is use to remove data stored in hash map dataset in redis using the cookie token as key
-   * @param hashMap
-   * @param keys
+   * @param token
    * @returns
    */
-  public removeFromRedis = async (hashMap: string, keys: string | string[]) => {
+  public removeFromRedis = async (token:string) => {
     try {
-      // find is the hashmap is present in the redis storage
-      const exists = await this.client.exists(hashMap);
-      if (exists) {
-        // if exists then delete the data with the key provided of the hash map
-        const result = await this.client.hDel(hashMap, keys);
-
-        return result;
-      }
+      const result = this.client.del(token);
+      return result;
     } catch (error) {
       return null;
     }

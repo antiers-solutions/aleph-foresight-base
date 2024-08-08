@@ -4,6 +4,8 @@ import * as Sentry from "@sentry/node";
 import express from "express";
 import cookieParser from "cookie-parser";
 import { Response, Request, NextFunction } from "express";
+import { loadEnvs } from "./config";
+if(process.env.NODE_ENV === 'test') loadEnvs();
 import { Controller } from "./interfaces";
 import sendResponse from "./responses/response.helper";
 import { RESPONSE_MESSAGES, STATUS_CODES } from "./constants";

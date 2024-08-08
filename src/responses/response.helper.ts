@@ -13,21 +13,22 @@ function sendResponse(res: Response, resData: ESResponse) {
     if (customMessage && statusCode !== STATUS_CODES.NOTFOUND)
       res
         .status(statusCode)
-        .send({ message: customMessage, data: resData?.data });
+        .send({ message: customMessage,status:statusCode, data: resData?.data });
     else if (statusCode === STATUS_CODES.INTERNALSERVER)
       res
         .status(statusCode)
-        .send({ message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR });
+        .send({ message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR ,status:statusCode});
     else if (statusCode === STATUS_CODES.NOTFOUND)
       res.status(statusCode).send({
         message: customMessage || RESPONSE_MESSAGES.NOT_FOUND,
+        status:statusCode,
         data: null
       });
     else res.status(statusCode).send({ data: resData.data });
   } catch (err) {
     res
       .status(STATUS_CODES.INTERNALSERVER)
-      .send({ message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR });
+      .send({ message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR,status:STATUS_CODES.INTERNALSERVER});
   }
 }
 

@@ -1,14 +1,6 @@
-import Web3 from "web3";
-import contractAbi from "../contract/contractabi";
-import redisHelper from "../helpers/redis.helper";
+import rpcHandlerInstance from '../helpers/rpc.helper'
 import { RESPONSE_MESSAGES, STATUS_CODES } from "../constants";
-const wsProvider = new Web3.providers.WebsocketProvider(
-  process.env.SOCKET_HOST
-);
-const web3 = new Web3(wsProvider);
-const contractAddress = process.env.CONTRACTADDRESS;
-const contract = new web3.eth.Contract(contractAbi, contractAddress);
-
+import redisHelper from "../helpers/redis.helper";
 /**
  * Validates and calculates pagination parameters.
  * @param {number} page - The requested page number.
@@ -38,6 +30,7 @@ const getPaginationParams = (
  */
 const getAdminAddress = async () => {
   try {
+    const contract = rpcHandlerInstance.getContractInstance();
     const adminAddress = await contract.methods.read_admin_address().call();
     return adminAddress;
   } catch (error) {

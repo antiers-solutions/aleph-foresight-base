@@ -508,6 +508,7 @@ class MongoDataHelper {
          this._checkModel(name);
          const Model = this._getModel(name);
          //Aggregation pipeline
+         const statuses = [0, 2, 4]; // Define the statuses you want to match
          const pipeline = [
            { $match: query },
             {
@@ -531,7 +532,6 @@ class MongoDataHelper {
                   }
                },
             },
-
          ];
          const results = await Model.aggregate(pipeline).exec();
          return results;
@@ -1237,21 +1237,6 @@ class MongoDataHelper {
          return null;
       }
    };
-   /**
-    * this helper is use to fetch data according to the query provided
-    * @param name
-    * @param query
-    * @returns
-    */
-   public findAndQueryData = async (name: string, query: any) => {
-      try {
-         this._checkModel(name);
-         const result = await this._getModel(name).find(query);
-         return result;
-      } catch (error) {
-         return null;
-      }
-   };
 
    /**
     * if data found then this function will update that data otherwise insert that data
@@ -1282,63 +1267,8 @@ class MongoDataHelper {
          return null;
       }
    };
-   /**
-    * this helper is use to remove  data field in a collection of mongodb
-    * @param name
-    * @param deleteObj
-    * @returns
-    */
-   public deleteData = async (name: string, deleteObj: object) => {
-      try {
-         this._checkModel(name);
-         const result = await this._getModel(name).deleteMany(deleteObj);
-         return result;
-      } catch (error) {
-         return null;
-      }
-   };
 
-   /**
-    * this helper is use to remove single data field in a collection of mongodb
-    * @param name
-    * @param deleteObj
-    * @returns
-    */
-   public removeSingleData = async (name: string, deleteObj: object) => {
-      try {
-         this._checkModel(name);
-         const result = await this._getModel(name).deleteOne(deleteObj);
-         return result;
-      } catch (error) {
-         return null;
-      }
-   };
 
-   /**
-    * clear the all collections except users collection
-    * @returns boolean
-    */
-   public clearCollectionsData = async () => {
-      try {
-         for (const modelKey in DATA_MODELS) {
-            if (modelKey === DATA_MODELS.User) continue;
-            const model = this._getModel(modelKey);
-            await model.deleteMany();
-         }
-         return true;
-      } catch (err) {
-         return false;
-      }
-   };
-
-   public dropDB = async () => {
-      try {
-         const isDroped = await mongoose.connection?.db.dropDatabase();
-         return isDroped;
-      } catch (err) {
-         return false;
-      }
-   };
    //---------------------------------internal methods -----------------------------------/
    // check if the model exist or not if not then throw error
    _checkModel = (model: string) => {

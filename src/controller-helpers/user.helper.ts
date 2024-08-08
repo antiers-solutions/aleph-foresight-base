@@ -333,14 +333,35 @@ class UserHelper {
   ): Promise<ESResponse> => {
     try {
       // this reomves the token from the redis hence preventing the re-login
-      await redisHelper.removeFromRedis(REDIS_VARIABLES.UserData, token);
-      await redisHelper.removeFromRedis(REDIS_VARIABLES.UserAgent, token);
+      await redisHelper.removeFromRedis(token);
       res.clearCookie(token);
       return {
         message: RESPONSE_MESSAGES.LOGOUT,
         status: STATUS_CODES.SUCCESS,
         error: false,
       };
+    } catch (error) {
+      return RESPONSE.INTERNAL_SERVER_ERROR;
+    }
+  };
+  public me = async (userAddress: string) => {
+    try {
+      let userDetails = await mongoDataHelper.findOne(DATA_MODELS.User, {
+        walletAddress: userAddress,
+      });
+      if (userDetails==null){
+        return RESPONSE.DATA_NOT_FOUND;
+      }
+      if (userDetails) {
+        return {
+          message: RESPONSE_MESSAGES.FETCH_EVENTSDATA_SUCCESS,
+          status: STATUS_CODES.SUCCESS,
+          data: userDetails,
+          error: false,
+        };
+      } else {
+        return RESPONSE.USER_NOT_FOUND;
+      }
     } catch (error) {
       return RESPONSE.INTERNAL_SERVER_ERROR;
     }
