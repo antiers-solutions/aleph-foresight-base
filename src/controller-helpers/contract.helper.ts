@@ -115,7 +115,7 @@ class ContractHelper {
           message: RESPONSE_MESSAGES.FETCH_EVENTSDATA_SUCCESS,
         };
       } else {
-        return RESPONSE.USER_NOT_FOUND;
+        return RESPONSE.NOT_FOUND;
       }
     } catch (error) {
       return RESPONSE.INTERNAL_SERVER_ERROR;
@@ -146,7 +146,7 @@ class ContractHelper {
           message: RESPONSE_MESSAGES.FETCH_EVENTSDATA_SUCCESS,
         };
       } else {
-        return RESPONSE.USER_NOT_FOUND;
+        return RESPONSE.NOT_FOUND;
       }
     } catch (error) {
       return RESPONSE.INTERNAL_SERVER_ERROR;
@@ -217,7 +217,7 @@ class ContractHelper {
           message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS,
         };
       } else {
-        return RESPONSE.USER_NOT_FOUND;
+        return RESPONSE.NOT_FOUND;
       }
     } catch (error) {
       return RESPONSE.INTERNAL_SERVER_ERROR;
@@ -256,7 +256,7 @@ class ContractHelper {
           message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS,
         };
       } else {
-        return RESPONSE.USER_NOT_FOUND;
+        return RESPONSE.NOT_FOUND;
       }
     } catch (error) {
       console.log(error);
@@ -318,7 +318,7 @@ class ContractHelper {
           message: RESPONSE_MESSAGES.FETCH_EVENTSDATA_SUCCESS,
         };
       } else {
-        return RESPONSE.USER_NOT_FOUND;
+        return RESPONSE.NOT_FOUND;
       }
     } catch (error) {
       return RESPONSE.INTERNAL_SERVER_ERROR;
@@ -366,7 +366,7 @@ class ContractHelper {
           message: RESPONSE_MESSAGES.FETCH_EVENTSDATA_SUCCESS,
         };
       } else {
-        return RESPONSE.USER_NOT_FOUND;
+        return RESPONSE.NOT_FOUND;
       }
     } catch (error) {
       return RESPONSE.INTERNAL_SERVER_ERROR;
@@ -394,7 +394,7 @@ class ContractHelper {
           message: RESPONSE_MESSAGES.FETCH_EVENTSDATA_SUCCESS,
         };
       } else {
-        return RESPONSE.USER_NOT_FOUND;
+        return RESPONSE.NOT_FOUND;
       }
     } catch (error) {
       return RESPONSE.INTERNAL_SERVER_ERROR;
@@ -423,7 +423,7 @@ class ContractHelper {
           message: RESPONSE_MESSAGES.FETCH_EVENTSDATA_SUCCESS,
         };
       } else {
-        return RESPONSE.USER_NOT_FOUND;
+        return RESPONSE.NOT_FOUND;
       }
     } catch (error) {
       return RESPONSE.INTERNAL_SERVER_ERROR;
@@ -451,7 +451,7 @@ class ContractHelper {
         0
       );
       if (falseAmountResult == null) {
-        return RESPONSE.DATA_NOT_FOUND;
+        return RESPONSE.NOT_FOUND;
       }
       const totalAmountClaimed = trueAmountResult
         ? trueAmountResult.totalAmountClaimed
@@ -472,7 +472,7 @@ class ContractHelper {
           message: RESPONSE_MESSAGES.FETCH_EVENTSDATA_SUCCESS,
         };
       } else {
-        return RESPONSE.USER_NOT_FOUND;
+        return RESPONSE.NOT_FOUND;
       }
     } catch (error) {
       return RESPONSE.INTERNAL_SERVER_ERROR;
@@ -486,14 +486,11 @@ class ContractHelper {
    */
   public totalBetOnEvent = async (eventId: string) => {
     try {
-      const totalNoOfBet = await mongoDataHelper.findAll(DATA_MODELS.Order, {
+      const totalBetOnEvent = await mongoDataHelper.getCount(DATA_MODELS.Order, {
         eventId: eventId,
       });
-      if (totalNoOfBet == null) {
-        return RESPONSE.DATA_NOT_FOUND;
-      }
-      const totalBetOnEvent = totalNoOfBet.length;
-      if (totalNoOfBet) {
+      
+      if (totalBetOnEvent) {
         return {
           error: false,
           data: { totalBetOnEvent },
@@ -501,7 +498,7 @@ class ContractHelper {
           message: RESPONSE_MESSAGES.FETCH_EVENTSDATA_SUCCESS,
         };
       } else {
-        return RESPONSE.USER_NOT_FOUND;
+        return RESPONSE.NOT_FOUND;
       }
     } catch (error) {
       return RESPONSE.INTERNAL_SERVER_ERROR;
@@ -520,7 +517,7 @@ class ContractHelper {
         { userId: userAddress, eventId: eventId, result: 1 }
       );
       if (!userCreateEvnt.length) {
-        return RESPONSE.USER_NOT_FOUND;
+        return RESPONSE.NOT_FOUND;
       }
       const platformFees = userCreateEvnt[0]?.platformFees;
       const isSettlementYes = userCreateEvnt[0]?.settlement === "Yes";

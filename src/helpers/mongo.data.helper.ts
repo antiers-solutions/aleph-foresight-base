@@ -55,7 +55,7 @@ class MongoDataHelper {
          const result = await DataObject.save();
          return result;
       } catch (error) {
-         console.log('error:', error);
+         log.red(ERROR_MESSAGE.SAVE_DATA, error.message);
          return null;
       }
    };
@@ -1264,6 +1264,7 @@ class MongoDataHelper {
          );
          return result;
       } catch (error) {
+         log.red(ERROR_MESSAGE.UPDATE_DATA, error.message);
          return null;
       }
    };

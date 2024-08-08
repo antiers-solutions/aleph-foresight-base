@@ -4,19 +4,24 @@ import {
   fromRpcSig,
   keccak256,
   bufferToHex,
-  pubToAddress,
+  pubToAddress
 } from "ethereumjs-util";
 import { v4 as uuidv4 } from "uuid";
 import { ApiResponse } from "interfaces/user.helpers.interface";
 const {
   getPaginationParams,
   getAdminAddress,
-  RESPONSE,
+  RESPONSE
 } = require("./common.helpers");
 import mongoDataHelper from "../helpers/mongo.data.helper";
 import redisHelper from "../helpers/redis.helper";
-import { STATUS_CODES, RESPONSE_MESSAGES, DATA_MODELS } from "../constants/";
-import { ADMIN_LOGIN, REDIS_EX_TIME } from "../constants/admin.constant";
+import {
+  STATUS_CODES,
+  RESPONSE_MESSAGES,
+  DATA_MODELS,
+  ADMIN
+} from "../constants/";
+import { REDIS_EX_TIME } from "../constants/admin.constant";
 
 class AdminHelper {
   /**
@@ -48,10 +53,10 @@ class AdminHelper {
           error: false,
           data: users,
           status: STATUS_CODES.SUCCESS,
-          message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS,
+          message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS
         };
       } else {
-        return RESPONSE.USER_NOT_FOUND;
+        return RESPONSE.NOT_FOUND;
       }
     } catch (error) {
       return RESPONSE.INTERNAL_SERVER_ERROR;
@@ -85,10 +90,10 @@ class AdminHelper {
           error: false,
           data: users,
           status: STATUS_CODES.SUCCESS,
-          message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS,
+          message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS
         };
       } else {
-        return RESPONSE.USER_NOT_FOUND;
+        return RESPONSE.NOT_FOUND;
       }
     } catch (error) {
       return RESPONSE.INTERNAL_SERVER_ERROR;
@@ -122,7 +127,7 @@ class AdminHelper {
           break;
         case "user":
           query.userId = {
-            $ne: JSON.parse(value).signerAddress.toLocaleLowerCase(),
+            $ne: JSON.parse(value).signerAddress.toLocaleLowerCase()
           };
           break;
         case "all":
@@ -142,10 +147,10 @@ class AdminHelper {
           error: false,
           data: ordersData,
           status: STATUS_CODES.SUCCESS,
-          message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS,
+          message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS
         };
       } else {
-        return RESPONSE.USER_NOT_FOUND;
+        return RESPONSE.NOT_FOUND;
       }
     } catch (error) {
       return RESPONSE.INTERNAL_SERVER_ERROR;
@@ -198,7 +203,7 @@ class AdminHelper {
         return {
           isAddress:
             address.toLocaleLowerCase() === publicKey.toLocaleLowerCase(),
-          address,
+          address
         };
       };
 
@@ -217,18 +222,18 @@ class AdminHelper {
           signatureVerified?.address.toLocaleLowerCase()
       ) {
         const token = uuidv4();
-        const role = ADMIN_LOGIN.ROLE;
+        const role = ADMIN;
         const setData = {
           signerAddress,
           role,
-          userAgent: userAgent,
+          userAgent: userAgent
         };
         // set token in redis
         await redisHelper.client.set(token, JSON.stringify(setData), {
-          EX: REDIS_EX_TIME.EXPIRE,
+          EX: REDIS_EX_TIME.EXPIRE
         });
         const admin = await mongoDataHelper.findOne(DATA_MODELS.User, {
-          walletAddress: signatureVerified?.address.toLocaleLowerCase(),
+          walletAddress: signatureVerified?.address.toLocaleLowerCase()
         });
         if (!admin) {
           await mongoDataHelper.saveData(DATA_MODELS.User, {
@@ -240,24 +245,24 @@ class AdminHelper {
             role: role,
             status: true,
             password: null,
-            profilePicture: null,
+            profilePicture: null
           });
         }
         return {
           token,
           data: {
-            walletAddress: payload?.wallet_address.toLocaleLowerCase(),
+            walletAddress: payload?.wallet_address.toLocaleLowerCase()
           },
           error: false,
           status: 200,
-          message: RESPONSE_MESSAGES.LOGIN,
+          message: RESPONSE_MESSAGES.LOGIN
         };
       } else {
         return {
           error: true,
           data: { isLogin: false },
           status: STATUS_CODES.UNAUTHORIZED,
-          message: RESPONSE_MESSAGES.ADMINNOTFOUND,
+          message: RESPONSE_MESSAGES.ADMINNOTFOUND
         };
       }
     } catch (error) {
@@ -265,7 +270,7 @@ class AdminHelper {
         error: true,
         data: { isLogin: false },
         status: STATUS_CODES.INTERNALSERVER,
-        message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR,
+        message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR
       };
     }
   };
@@ -286,7 +291,7 @@ class AdminHelper {
         {}
       );
       if (orderTransactions == null && eventTransactions == null) {
-        return RESPONSE.DATA_NOT_FOUND;
+        return RESPONSE.NOT_FOUND;
       }
       const transactionData = eventTransactions + orderTransactions;
       if (transactionData) {
@@ -294,10 +299,10 @@ class AdminHelper {
           error: false,
           data: { transactionData },
           status: STATUS_CODES.SUCCESS,
-          message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS,
+          message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS
         };
       } else {
-        return RESPONSE.USER_NOT_FOUND;
+        return RESPONSE.NOT_FOUND
       }
     } catch (error) {
       return RESPONSE.INTERNAL_SERVER_ERROR;
@@ -311,25 +316,20 @@ class AdminHelper {
    */
   public getTotalEvents = async () => {
     try {
-      const eventsData = await mongoDataHelper.findAll(DATA_MODELS.Events, {});
-      const activeEventsData = await mongoDataHelper.findAll(
+      const total = await mongoDataHelper.getCount(DATA_MODELS.Events, {});
+      const totalActiveEvent = await mongoDataHelper.getCount(
         DATA_MODELS.Events,
         { status: 1 }
       );
-      if (eventsData == null && activeEventsData == null) {
-        return RESPONSE.DATA_NOT_FOUND;
-      }
-      const total = eventsData.length;
-      const totalActiveEvent = activeEventsData.length;
       if (total) {
         return {
           error: false,
           data: { totalEvents: total, totalActiveEvent },
           status: STATUS_CODES.SUCCESS,
-          message: RESPONSE_MESSAGES.FETCH_EVENTSDATA_SUCCESS,
+          message: RESPONSE_MESSAGES.FETCH_EVENTSDATA_SUCCESS
         };
       } else {
-        return RESPONSE.USER_NOT_FOUND;
+        return RESPONSE.NOT_FOUND;
       }
     } catch (error) {
       return RESPONSE.INTERNAL_SERVER_ERROR;
@@ -349,10 +349,10 @@ class AdminHelper {
           error: false,
           data: { total },
           status: STATUS_CODES.SUCCESS,
-          message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS,
+          message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS
         };
       } else {
-        return RESPONSE.USER_NOT_FOUND;
+        return RESPONSE.NOT_FOUND;
       }
     } catch (error) {
       return RESPONSE.INTERNAL_SERVER_ERROR;
@@ -385,10 +385,10 @@ class AdminHelper {
           error: false,
           data: disputeData,
           status: STATUS_CODES.SUCCESS,
-          message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS,
+          message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS
         };
       } else {
-        return RESPONSE.USER_NOT_FOUND;
+        return RESPONSE.NOT_FOUND;
       }
     } catch (error) {
       return RESPONSE.INTERNAL_SERVER_ERROR;

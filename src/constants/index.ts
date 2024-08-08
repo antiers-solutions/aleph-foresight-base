@@ -74,7 +74,7 @@ export const RESPONSE_MESSAGES = {
   ROUTE_404: "Route not found.",
   Max_LIMIT: "Invalid page limit (defaults to 10, maximum is 40)",
   USERNAME_EXIST: "Username already exists",
-  DATA_NOT_FOUND: "Data not found"
+  API_SERVICE: "API Service is up"
 };
 
 // Error messages
@@ -88,4 +88,5 @@ export const ERROR_MESSAGES = {
 };
 
 export const UNDEFINED = "undefined";
-export const ROLE = "admin";
+export const ADMIN = "admin";
+export const USER = "user";

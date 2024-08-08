@@ -6,16 +6,18 @@ import redisHelper from "../helpers/redis.helper";
  * @param {number} page - The requested page number.
  * @param {number} limit - The requested limit per page.
  * @param {number} defaultLimit - The default limit if the provided limit is invalid.
+ * @param {number} maxLimit - The maximum limit allowed per page.
  * @returns {{ validatedPage: number, validatedLimit: number, skip: number, limitValue: number }}
  */
 const getPaginationParams = (
   page: number,
   limit: number,
-  defaultLimit = 10
+  defaultLimit = 10,
+  maxLimit = 100
 ) => {
   const validatedPage = Math.max(1, page); // Ensure page is at least 1
-  const validatedLimit = limit > 0 ? limit : defaultLimit; // Ensure limit is at least defaultLimit
-  const skip = ((page || 1) - 1) * limit;
+  const validatedLimit = Math.min(Math.max(limit, 1), maxLimit); // Ensure limit is between 1 and maxLimit
+  const skip = (validatedPage - 1) * validatedLimit;
   const limitValue = validatedLimit;
   return {
     validatedPage,
@@ -24,6 +26,7 @@ const getPaginationParams = (
     limitValue,
   };
 };
+
 /**
  * get admin address from the contract
  * @returns admin address
@@ -67,22 +70,16 @@ const calculatePayout = (
 };
 
 const RESPONSE = {
-  USER_NOT_FOUND: {
+  NOT_FOUND: {
     error: false,
     data: null,
-    status: STATUS_CODES.NOCONTENT,
-    message: RESPONSE_MESSAGES.DATA_NOT_FOUND,
+    status: STATUS_CODES.SUCCESS,
+    message: RESPONSE_MESSAGES.NOT_FOUND,
   },
   INTERNAL_SERVER_ERROR: {
     error: true,
     status: STATUS_CODES.INTERNALSERVER,
     message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR,
-  },
-  DATA_NOT_FOUND: {
-    error: false,
-    data: null,
-    status: STATUS_CODES.NOTFOUND,
-    message: RESPONSE_MESSAGES.DATA_NOT_FOUND,
   },
 };
 

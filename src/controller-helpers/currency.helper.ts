@@ -18,7 +18,7 @@ class CurrencyHelper {
           message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS,
         };
       } else {
-        return RESPONSE.USER_NOT_FOUND;
+        return RESPONSE.NOT_FOUND;
       }
     } catch (error) {
       return RESPONSE.INTERNAL_SERVER_ERROR;
@@ -42,7 +42,7 @@ class CurrencyHelper {
           message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS,
         };
       } else {
-        return RESPONSE.USER_NOT_FOUND;
+        return RESPONSE.NOT_FOUND;
       }
     } catch (error) {
       return RESPONSE.INTERNAL_SERVER_ERROR;

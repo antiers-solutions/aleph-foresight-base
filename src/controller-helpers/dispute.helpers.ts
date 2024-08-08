@@ -32,11 +32,7 @@ class DisputeHelper {
         skip,
         limitValue
       );
-      const disputeData = await mongoDataHelper.findAll(DATA_MODELS.Dispute,query);
-      if (disputeData==null){
-        return RESPONSE.DATA_NOT_FOUND;
-      }
-      const total = disputeData.length
+      const total = await mongoDataHelper.getCount(DATA_MODELS.Dispute,query);
       if (dispute) {
         return {
           error: false,
@@ -45,7 +41,7 @@ class DisputeHelper {
           message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS,
         };
       } else {
-        return RESPONSE.USER_NOT_FOUND;
+        return RESPONSE.NOT_FOUND;
       }
     } catch (error) {
       return RESPONSE.INTERNAL_SERVER_ERROR;
@@ -142,7 +138,7 @@ class DisputeHelper {
           message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS,
         };
       } else {
-        return RESPONSE.USER_NOT_FOUND;
+        return RESPONSE.NOT_FOUND;
       }
     } catch (error) {
       return RESPONSE.INTERNAL_SERVER_ERROR;

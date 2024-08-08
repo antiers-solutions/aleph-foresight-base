@@ -2,7 +2,7 @@ import { Response, Request, NextFunction } from 'express';
 import redisHelper from '../helpers/redis.helper';
 import sendResponse from '../responses/response.helper';
 const {getAdminAddress, isTokenExpired} = require( '../controller-helpers/common.helpers')
-import { RESPONSE_MESSAGES, STATUS_CODES, ROLE } from '../constants';
+import { RESPONSE_MESSAGES, STATUS_CODES, ADMIN } from '../constants';
 
 /**
  * It is use to check if the cookie in requests exists and then verifies it
@@ -36,7 +36,7 @@ export const adminCheck =  async (
       const userAgentRequest = req.headers['user-agent'];
 
       if (value.userAgent == userAgentRequest && value.signerAddress.toLocaleLowerCase() == adminAddress.toLocaleLowerCase() 
-        && value.role == ROLE) {
+        && value.role == ADMIN) {
            // updating the token time for session login
           await redisHelper.updateRedisTime(
             token,

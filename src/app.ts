@@ -69,7 +69,7 @@ class App {
   private initializeControllers(controllers: Controller[]) {
     // Check api status
     this.app.get("/", (req: Request, res: Response) =>
-      sendResponse(res, { message: "API Service is up" })
+      sendResponse(res, { message: RESPONSE_MESSAGES.API_SERVICE })
     );
 
     // Setup the controllers

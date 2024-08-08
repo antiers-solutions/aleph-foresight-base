@@ -19,8 +19,9 @@ import {
   RESPONSE_MESSAGES,
   DATA_MODELS,
   REDIS_VARIABLES,
+  USER
 } from "../constants";
-import { ROLE, REDIS_EX_TIME } from "../constants/user.constant";
+import { REDIS_EX_TIME } from "../constants/user.constant";
 AWS.config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
@@ -83,7 +84,7 @@ class UserHelper {
       );
       if (isSignatureValid?.isAddress) {
         const token = uuidv4()
-        const role = ROLE.USER;
+        const role = USER;
         const setData = {
           signerAddress,
           role,
@@ -104,7 +105,7 @@ class UserHelper {
             userName: null,
             walletAddress: payload?.wallet_address.toLocaleLowerCase(),
             email: null,
-            role: ROLE.USER,
+            role: USER,
             status: true,
             password: null,
             profilePicture: null,
@@ -217,7 +218,7 @@ class UserHelper {
           message: RESPONSE_MESSAGES.UPDATED_SUCCESS,
         };
       } else {
-        return RESPONSE.USER_NOT_FOUND;
+        return RESPONSE.NOT_FOUND;
       }
     } catch (error) {
       return RESPONSE.INTERNAL_SERVER_ERROR;
@@ -241,7 +242,7 @@ class UserHelper {
           message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS,
         };
       } else {
-        return RESPONSE.USER_NOT_FOUND;
+        return RESPONSE.NOT_FOUND;
       }
     } catch (error) {
       return RESPONSE.INTERNAL_SERVER_ERROR;
@@ -253,11 +254,7 @@ class UserHelper {
    */
   public getTotalUser = async () => {
     try {
-      const userData = await mongoDataHelper.findAll(DATA_MODELS.User, {});
-      if (userData==null){
-        return RESPONSE.DATA_NOT_FOUND;
-      }
-      const total = userData.length;
+      const total = await mongoDataHelper.getCount(DATA_MODELS.User, {});
       if (total) {
         return {
           error: false,
@@ -266,7 +263,7 @@ class UserHelper {
           message: RESPONSE_MESSAGES.FETCH_USER_SUCCESS,
         };
       } else {
-        return RESPONSE.USER_NOT_FOUND;
+        return RESPONSE.NOT_FOUND;
       }
     } catch (error) {
       return RESPONSE.INTERNAL_SERVER_ERROR;
@@ -292,7 +289,7 @@ class UserHelper {
           message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS,
         };
       } else {
-        return RESPONSE.USER_NOT_FOUND;
+        return RESPONSE.NOT_FOUND;
       }
     } catch (error) {
       return RESPONSE.INTERNAL_SERVER_ERROR;
