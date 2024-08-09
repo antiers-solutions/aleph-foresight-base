@@ -27,10 +27,10 @@ export const sessionCheck = async (
     }
     const value = JSON.parse(await redisHelper.client.get(token));
 
-
+    const walletAddress = req.body.walletAddress.toLocaleLowerCase()
     const userAgentRequest = req.headers['user-agent'];
 
-    if (value.userAgent == userAgentRequest && value.signerAddress) {
+    if (value.userAgent == userAgentRequest && value.signerAddress == walletAddress) {
       // updating the token time for session login
       await redisHelper.updateRedisTime(
         token,
