@@ -853,6 +853,19 @@ class MongoDataHelper {
                },
             },
             {
+               $addFields:{
+                  noBetYet:{
+                     $cond:{
+                        if: {
+                           $eq:[{$size:'$closedPosition'},0]
+                        },
+                        then: true,
+                        else: false
+                     } 
+                  }
+               }
+            },
+            {
                $project: {
                   eventId: '$eventId',
                   txnId: '$txnId',
@@ -863,6 +876,7 @@ class MongoDataHelper {
                   updatedAt: '$updatedAt',
                   totalAmount: { $sum: '$closedPosition.amount' },
                   transactionCount: { $size: '$closedPosition' },
+                  noBetYet:1
                },
             },
          ];
