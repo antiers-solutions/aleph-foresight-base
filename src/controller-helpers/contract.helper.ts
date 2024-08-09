@@ -408,9 +408,15 @@ class ContractHelper {
    */
   public volumeTraded = async (userAddress: string) => {
     try {
-      let volumeTraded = await mongoDataHelper.findAllSum(DATA_MODELS.Order, {
+      const query = {
         userId: userAddress,
-      });
+        bidType: {
+            $nin:["withdraw", "claimed"]
+        }
+      }
+      let volumeTraded = await mongoDataHelper.findAllSum(DATA_MODELS.Order,
+        query
+      );
       if (volumeTraded == null) {
         return RESPONSE.DATA_NOT_FOUND;
       }

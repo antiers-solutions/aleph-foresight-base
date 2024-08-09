@@ -1142,6 +1142,7 @@ class MongoDataHelper {
             {
                $addFields: {
                   noOfEvents: { $size: '$userDetails' },
+                  rewards: { $sum : '$userDetails.reward'}
                },
             },
             {
