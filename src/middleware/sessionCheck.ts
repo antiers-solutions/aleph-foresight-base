@@ -27,10 +27,9 @@ export const sessionCheck = async (
     }
     const value = JSON.parse(await redisHelper.client.get(token));
 
-    const walletAddress = req.body.walletAddress.toLocaleLowerCase()
     const userAgentRequest = req.headers['user-agent'];
 
-    if (value.userAgent == userAgentRequest && value.signerAddress == walletAddress) {
+    if (value.userAgent == userAgentRequest && value.signerAddress ) {
       // updating the token time for session login
       await redisHelper.updateRedisTime(
         token,
@@ -45,6 +44,7 @@ export const sessionCheck = async (
       });
     }
   } catch (err) {
+    console.log(err)
     return sendResponse(res, {
       message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR,
       status: STATUS_CODES.INTERNALSERVER

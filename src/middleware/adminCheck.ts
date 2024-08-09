@@ -31,12 +31,12 @@ export const adminCheck =  async (
       }
 
       const value = JSON.parse(await redisHelper.client.get(token));
-      const walletAddress = req.body.walletAddress.toLocaleLowerCase()
+      
     
       const userAgentRequest = req.headers['user-agent'];
 
       if (value.userAgent == userAgentRequest && value.signerAddress.toLocaleLowerCase() == adminAddress.toLocaleLowerCase() 
-        && value.role == ADMIN && value.signerAddress.toLocaleLowerCase() == walletAddress) {
+        && value.role == ADMIN) {
            // updating the token time for session login
           await redisHelper.updateRedisTime(
             token,
