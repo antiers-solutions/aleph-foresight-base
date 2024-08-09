@@ -871,6 +871,7 @@ class MongoDataHelper {
                   txnId: '$txnId',
                   userId:'$userId',
                   status: '$status',
+                  priceLevel:'$priceLevel',
                   targetDateTime: '$targetDateTime',
                   createdAt: '$createdAt',
                   updatedAt: '$updatedAt',
