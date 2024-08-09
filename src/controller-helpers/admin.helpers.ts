@@ -228,6 +228,10 @@ class AdminHelper {
           role,
           userAgent: userAgent
         };
+        const value = JSON.parse(await redisHelper.client.get(token));
+        if (value) {
+          await redisHelper.client.del(token);
+        }
         // set token in redis
         await redisHelper.client.set(token, JSON.stringify(setData), {
           EX: REDIS_EX_TIME.EXPIRE
