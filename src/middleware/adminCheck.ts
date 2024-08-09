@@ -21,7 +21,7 @@ export const adminCheck =  async (
     try {  
       // fetch the admin address from contract
       const adminAddress = await getAdminAddress();
-      const token = String(req.cookies.token);
+      const token = String(req.cookies.token_admin);
       // check for token
       if (!token || token == undefined || await isTokenExpired(token)) {
         return sendResponse(res, {
