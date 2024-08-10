@@ -96,6 +96,11 @@ class UserHelper {
         if (req.headers['cookie']?.token) {
           await redisHelper.client.del(req.headers['cookie']?.token);
         }
+        const value = JSON.parse( await redisHelper.client.get(token))
+        if ( value ) {
+          await redisHelper.client.del(token);
+        }
+        res.clearCookie(req.headers['cookie']?.token)
         // set token in redis
         await redisHelper.client.set(token, JSON.stringify(setData), {
           EX: REDIS_EX_TIME.EXPIRE,
@@ -127,7 +132,6 @@ class UserHelper {
         };
       }
     } catch (err) {
-      console.log(err)
       return {
         error: true,
         data: { isLogin: false },
