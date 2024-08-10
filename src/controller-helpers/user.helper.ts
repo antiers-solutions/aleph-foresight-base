@@ -41,6 +41,7 @@ class UserHelper {
    * @returns
    */
   connectWallet = async (
+    cookies: object,
     res: Response,
     payload: {
       wallet_address: string;
@@ -91,9 +92,9 @@ class UserHelper {
           userAgent: userAgent,
           token
         };
-        const value = JSON.parse(await redisHelper.client.get(token));
+        const value = JSON.parse(await redisHelper.client.get(cookies['token']));
         if (value) {
-          await redisHelper.client.del(token);
+          await redisHelper.client.del(cookies['token']);
         }
         // set token in redis
         await redisHelper.client.set(token, JSON.stringify(setData), {
@@ -229,30 +230,6 @@ class UserHelper {
     }
   };
   /**
-   * helper function to get total number of event creators on platform
-   * @returns 
-   */
-  public getTotalEventCreators = async (
-  ) => {
-    try {
-      const totalCreators = await mongoDataHelper.findTotalEventCreators(
-        DATA_MODELS.Events,
-      );
-      if (totalCreators) {
-        return {
-          error: false,
-          data: { totalCreators:totalCreators } ,
-          status: STATUS_CODES.SUCCESS,
-          message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS,
-        };
-      } else {
-        return RESPONSE.NOT_FOUND;
-      }
-    } catch (error) {
-      return RESPONSE.INTERNAL_SERVER_ERROR;
-    }
-  };
-  /**
    * helper function to get the total number of users on platform
    * @returns 
    */
@@ -291,6 +268,33 @@ class UserHelper {
           data: { totalVolume },
           status: STATUS_CODES.SUCCESS,
           message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS,
+        };
+      } else {
+        return RESPONSE.NOT_FOUND;
+      }
+    } catch (error) {
+      return RESPONSE.INTERNAL_SERVER_ERROR;
+    }
+  };
+  /**
+   * helper function to get total events on the platform
+   * @param res
+   * @param payload
+   * @returns
+   */
+  public getTotalEvents = async () => {
+    try {
+      const total = await mongoDataHelper.getCount(DATA_MODELS.Events, {});
+      const totalActiveEvent = await mongoDataHelper.getCount(
+        DATA_MODELS.Events,
+        { status: 1 }
+      );
+      if (total) {
+        return {
+          error: false,
+          data: { totalEvents: total, totalActiveEvent },
+          status: STATUS_CODES.SUCCESS,
+          message: RESPONSE_MESSAGES.FETCH_EVENTSDATA_SUCCESS
         };
       } else {
         return RESPONSE.NOT_FOUND;

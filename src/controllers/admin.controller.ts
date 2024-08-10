@@ -17,7 +17,7 @@ class AdminController implements Controller {
     this.router.get(`${this.path}/getUser`,adminCheck, this.getUser);
     this.router.get(`${this.path}/getEventsCreators`,adminCheck, this.getEventsCreators);
     this.router.get(`${this.path}/getClosedPosition`,adminCheck,this.getClosedPosition);
-    this.router.get(`${this.path}/getTotalEvents`,adminCheck,  this.getTotalEvents);
+    this.router.get(`${this.path}/getTotalEventCreators`, adminCheck, this.getTotalEventCreators);
     this.router.get(`${this.path}/getTotalTransaction`,adminCheck, this.getTotalTransaction)
     this.router.get(`${this.path}/getDisputeRaise`,adminCheck,this.getDisputeRaise);
     this.router.get(`${this.path}/getTotalDispute`,adminCheck, this.getTotalDispute);
@@ -48,14 +48,14 @@ class AdminController implements Controller {
     return sendResponse(res,getUser);
   };
   /**
-   * It gets the total events from its helper function
+   * It gets the total event creators
    * @param req
    * @param res
    * @returns
    */
-  private getTotalEvents = async (req: Request, res: Response) => {
-    const getTotalEvents: object = await AdminHelper.getTotalEvents();
-    return sendResponse(res, getTotalEvents);
+  private getTotalEventCreators = async (req: Request, res: Response) => {
+    const getTotalEventCreators: object = await AdminHelper.getTotalEventCreators();
+    return sendResponse(res, getTotalEventCreators);
   };
   /**
    * It gets the total disputes from its helper function
@@ -102,13 +102,14 @@ class AdminController implements Controller {
    */
   private adminLogin = async (req: Request, res: Response) => {
     const adminData:object = await AdminHelper.adminLogin(
+      req.cookies,
       res,
       req.body,
       req.headers["user-agent"]
     );
     if (adminData) {
       const token = adminData['token']
-      res.cookie("token_admin",token, {
+      res.cookie("token",token, {
         path: "/",
         httpOnly: true,
         secure: true,

@@ -34,7 +34,7 @@ class UserController implements Controller {
       sessionCheck,
       this.uploadProfile
     );
-    this.router.get(`${this.path}/getTotalEventCreators`,  this.getTotalEventCreators);
+    this.router.get(`${this.path}/getTotalEvents`,  this.getTotalEvents);
     this.router.get(`${this.path}/getTotalUser`,  this.getTotalUser);
     this.router.get(`${this.path}/getTotalVolume`,  this.getTotalVolume);
     this.router.get(`${this.path}/get-profile`, sessionCheck, this.getProfile)
@@ -51,6 +51,7 @@ class UserController implements Controller {
    */
   private connectWallet = async (req: Request, res: Response) => {
     const userData = await UserHelper.connectWallet(
+      req.cookies,
       res,
       req.body,
       req.headers["user-agent"]
@@ -77,14 +78,14 @@ class UserController implements Controller {
     return sendResponse(res, fileUrl);
   };
   /**
-   * It gets the total event creators
+   * It gets the total events from its helper function
    * @param req
    * @param res
    * @returns
    */
-  private getTotalEventCreators = async (req: Request, res: Response) => {
-    const getTotalEventCreators: object = await userHelper.getTotalEventCreators();
-    return sendResponse(res, getTotalEventCreators);
+  private getTotalEvents = async (req: Request, res: Response) => {
+    const getTotalEvents: object = await userHelper.getTotalEvents();
+    return sendResponse(res, getTotalEvents);
   };
   /**
    * It gets the total users
