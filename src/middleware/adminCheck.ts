@@ -35,13 +35,13 @@ export const adminCheck =  async (
     
       const userAgentRequest = req.headers['user-agent'];
 
-      if (value.userAgent == userAgentRequest && value.signerAddress.toLocaleLowerCase() == adminAddress.toLocaleLowerCase() 
+      if (value.userAgent == userAgentRequest && value?.signerAddress?.toLocaleLowerCase() == adminAddress?.toLocaleLowerCase() 
         && value.role == ADMIN) {
            // updating the token time for session login
           await redisHelper.updateRedisTime(
             token,
           );
-          req.body.walletAddress = value.signerAddress.toLocaleLowerCase()
+          req.body.walletAddress = value?.signerAddress?.toLocaleLowerCase()
           // if the admin access token is found and valid proceed the user to its request
             next();
       }

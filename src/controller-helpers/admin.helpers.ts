@@ -123,11 +123,11 @@ class AdminHelper {
       const value = await redisHelper.client.get(token);
       switch (filter) {
         case "admin":
-          query.userId = JSON.parse(value).signerAddress.toLocaleLowerCase(); // wallet address from token
+          query.userId = JSON.parse(value)?.signerAddress?.toLocaleLowerCase(); // wallet address from token
           break;
         case "user":
           query.userId = {
-            $ne: JSON.parse(value).signerAddress.toLocaleLowerCase()
+            $ne: JSON.parse(value)?.signerAddress?.toLocaleLowerCase()
           };
           break;
         case "all":

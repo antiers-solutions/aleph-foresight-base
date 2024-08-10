@@ -29,10 +29,10 @@ export const sessionCheck = async (
     console.log("value ===>>>", value);
 
     const userAgentRequest = req.headers["user-agent"];
-    if (value.userAgent == userAgentRequest && value.signerAddress != `${process.env.ADMINADDRESS}`) {
+    if (value.userAgent == userAgentRequest && value?.signerAddress != `${process.env.ADMINADDRESS}`) {
       // updating the token time for session login
       await redisHelper.updateRedisTime(token);
-      req.body.walletAddress = value.signerAddress.toLocaleLowerCase();
+      req.body.walletAddress = value?.signerAddress?.toLocaleLowerCase();
       // if the user access token is found and valid proceed the user to its request
       next();
     } else {

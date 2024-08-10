@@ -89,7 +89,7 @@ class AdminController implements Controller {
     const limit = Number(req.query.limit);
     const status = Number(req.query.status)
     const filter = String(req.query.filter)
-    const token = String(req.cookies.token_admin)
+    const token = String(req.cookies.token)
     const closedPosition:object = await AdminHelper.getClosedPosition(res,{page,limit,status,filter,token});
     return sendResponse(res, closedPosition);
   };
