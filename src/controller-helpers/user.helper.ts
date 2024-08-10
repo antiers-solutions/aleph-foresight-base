@@ -35,13 +35,14 @@ class UserHelper {
   }
   /**
    * The user sign-in helper handles all the login operations and checks for valid users
+   * @param req
    * @param res
    * @param payload
    * @param userAgent
    * @returns
    */
   connectWallet = async (
-    cookies: object,
+    req,
     res: Response,
     payload: {
       wallet_address: string;
@@ -92,9 +93,8 @@ class UserHelper {
           userAgent: userAgent,
           token
         };
-        const value = JSON.parse(await redisHelper.client.get(cookies['token']));
-        if (value) {
-          await redisHelper.client.del(cookies['token']);
+        if (req.headers['cookie']?.token) {
+          await redisHelper.client.del(req.headers['cookie']?.token);
         }
         // set token in redis
         await redisHelper.client.set(token, JSON.stringify(setData), {
@@ -127,6 +127,7 @@ class UserHelper {
         };
       }
     } catch (err) {
+      console.log(err)
       return {
         error: true,
         data: { isLogin: false },

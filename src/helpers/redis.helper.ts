@@ -142,12 +142,12 @@ public updateRedisTime = async (
    * @param key
    * @returns
    */
-  public getDataFromRedisKey = async (hashMap: string, key: string) => {
+  public getDataFromRedisKey = async (token: string) => {
     try {
-      const exists = await this.client.exists(hashMap);
+      const exists = await this.client.exists(token);
       if (exists) {
         // if exists then gets the data from the redis hashmap with a specific key
-        const result = await this.client.hGet(hashMap, key);
+        const result = await this.client.get(token);
 
         return result;
       }

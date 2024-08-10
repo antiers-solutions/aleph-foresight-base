@@ -51,7 +51,7 @@ class UserController implements Controller {
    */
   private connectWallet = async (req: Request, res: Response) => {
     const userData = await UserHelper.connectWallet(
-      req.cookies,
+      req,
       res,
       req.body,
       req.headers["user-agent"]

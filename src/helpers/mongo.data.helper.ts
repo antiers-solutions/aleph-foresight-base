@@ -445,6 +445,13 @@ class MongoDataHelper {
                      },
                   },
                },
+            }
+            },
+            {
+              $addFields:{
+               userDetails:{
+                  $first:'$userDetails'
+               },
                targetDateTime:{
                   $first:"$targetDateTime.targetDateTime"
                },
@@ -454,7 +461,7 @@ class MongoDataHelper {
                currencyType:{
                   $first:"$targetDateTime.currencyType"
                }
-            }
+              } 
             }
          ];
 

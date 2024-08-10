@@ -102,7 +102,7 @@ class AdminController implements Controller {
    */
   private adminLogin = async (req: Request, res: Response) => {
     const adminData:object = await AdminHelper.adminLogin(
-      req.cookies,
+      req,
       res,
       req.body,
       req.headers["user-agent"]

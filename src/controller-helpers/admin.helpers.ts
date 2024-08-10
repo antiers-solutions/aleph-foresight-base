@@ -182,14 +182,14 @@ class AdminHelper {
   };
   /**
    * The admin sign-in helper handles login operation and check if the user is admin or not
-   * @param cookies
+   * @param req
    * @param res
    * @param payload
    * @param userAgent
    * @returns
    */
   public adminLogin = async (
-    cookies: object,
+    req,
     res: Response,
     payload: {
       wallet_address: string;
@@ -254,9 +254,8 @@ class AdminHelper {
           role,
           userAgent: userAgent
         };
-        const value = JSON.parse(await redisHelper.client.get(cookies['token']));
-        if (value) {
-          await redisHelper.client.del(cookies['token']);
+        if (req.headers['cookie']?.token) {
+          await redisHelper.client.del(req.headers['cookie']?.token);
         }
         // set token in redis
         await redisHelper.client.set(token, JSON.stringify(setData), {
