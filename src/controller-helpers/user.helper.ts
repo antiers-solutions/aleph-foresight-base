@@ -42,7 +42,6 @@ class UserHelper {
    * @returns
    */
   connectWallet = async (
-    req,
     res: Response,
     payload: {
       wallet_address: string;
@@ -93,14 +92,6 @@ class UserHelper {
           userAgent: userAgent,
           token
         };
-        if (req.headers['cookie']?.token) {
-          await redisHelper.client.del(req.headers['cookie']?.token);
-        }
-        const value = JSON.parse( await redisHelper.client.get(token))
-        if ( value ) {
-          await redisHelper.client.del(token);
-        }
-        res.clearCookie(req.headers['cookie']?.token)
         // set token in redis
         await redisHelper.client.set(token, JSON.stringify(setData), {
           EX: REDIS_EX_TIME.EXPIRE,

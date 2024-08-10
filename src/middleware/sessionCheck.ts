@@ -29,8 +29,7 @@ export const sessionCheck = async (
     console.log("value ===>>>", value);
 
     const userAgentRequest = req.headers["user-agent"];
-
-    if (value.userAgent == userAgentRequest && value.signerAddress) {
+    if (value.userAgent == userAgentRequest && value.signerAddress != `${process.env.ADMINADDRESS}`) {
       // updating the token time for session login
       await redisHelper.updateRedisTime(token);
       req.body.walletAddress = value.signerAddress.toLocaleLowerCase();

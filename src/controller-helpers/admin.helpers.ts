@@ -189,7 +189,6 @@ class AdminHelper {
    * @returns
    */
   public adminLogin = async (
-    req,
     res: Response,
     payload: {
       wallet_address: string;
@@ -254,14 +253,7 @@ class AdminHelper {
           role,
           userAgent: userAgent
         };
-        if (req.headers['cookie']?.token) {
-          await redisHelper.client.del(req.headers['cookie']?.token);
-        }
-        const value = JSON.parse( await redisHelper.client.get(token))
-        if ( value ) {
-          await redisHelper.client.del(token);
-        }
-        res.clearCookie(req.headers['cookie']?.token)
+        
         // set token in redis
         await redisHelper.client.set(token, JSON.stringify(setData), {
           EX: REDIS_EX_TIME.EXPIRE
