@@ -2,6 +2,8 @@ import * as express from "express";
 import { Request, Response } from "express";
 import { Controller } from "../interfaces";
 import AdminHelper from "../controller-helpers/admin.helpers";
+import userHelper from "controller-helpers/user.helper";
+import contractHelper from "controller-helpers/contract.helper";
 import sendResponse from "../responses/response.helper";
 import { adminCheck } from "../middleware/adminCheck";
 import { REDIS_EX_TIME } from "../constants/admin.constant";
@@ -21,6 +23,8 @@ class AdminController implements Controller {
     this.router.get(`${this.path}/getTotalTransaction`,adminCheck, this.getTotalTransaction)
     this.router.get(`${this.path}/getDisputeRaise`,adminCheck,this.getDisputeRaise);
     this.router.get(`${this.path}/getTotalDispute`,adminCheck, this.getTotalDispute);
+    this.router.get(`${this.path}/getEventDetails`,adminCheck,this.getEventDetails);
+    this.router.get(`${this.path}/logout`,adminCheck, this.userLogout);
     this.router.post(`${this.path}/adminLogin`,loginValidation, this.adminLogin)
   }
   /**
@@ -129,6 +133,28 @@ class AdminController implements Controller {
     const limit = Number(req.query.limit);
     const getDisputeRaise = await AdminHelper.getDisputeRaise(res,{page,limit});
     return sendResponse(res,getDisputeRaise);
+  };
+  /**
+   * Retrieves the details of a specific event based on the provided event ID.
+   * @param req 
+   * @param res 
+   * @returns 
+   */
+  private getEventDetails = async (req: Request, res: Response) => {
+    const eventId = String(req.query.eventId);
+    const eventData:object = await contractHelper.getEventDetails(res,{ eventId });
+    return sendResponse(res, eventData);
+  };
+  /**
+   * It handles the user logout helper
+   * @param req
+   * @param res
+   * @returns
+   */
+  private userLogout = async (req: Request, res: Response) => {
+    const token = req.cookies.token;
+    const check = await userHelper.userLogout(token, res);
+    return sendResponse(res, check);
   };
 }
 export default AdminController;
