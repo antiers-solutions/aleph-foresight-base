@@ -82,7 +82,7 @@ class ContractHelper {
       const sortOptions: any = {};
       switch (filter) {
         case "closingSoon":
-          sortOptions.convertedDate = 1; // Ascending order for closing soon
+          sortOptions.eventExpireTime = 1; // Ascending order for closing soon
           break;
         case "newlyAdded":
           sortOptions.createdAt = -1; // Newly added events, descending order by creation date
