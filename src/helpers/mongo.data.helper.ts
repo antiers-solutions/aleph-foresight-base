@@ -853,7 +853,7 @@ class MongoDataHelper {
                };
             } else { // close position
                matchData = {
-                  $or: [{ status: 0 }, { status: 2 }],
+                  $or: [{ status: 0 }, { status: 2 }, {status: 4}],
                };
             }
          }
