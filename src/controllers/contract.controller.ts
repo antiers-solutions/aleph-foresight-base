@@ -20,6 +20,7 @@ class ContractController implements Controller {
     this.router.get(`${this.path}/getUserEvent`,sessionCheck,this.getUserEvent);
     this.router.get(`${this.path}/totalTraded`,sessionCheck,this.totalTraded);
     this.router.get(`${this.path}/volumeTraded`,sessionCheck,this.volumeTraded);
+    this.router.get(`${this.path}/amountInvested`,sessionCheck,this.amountInvested);
     this.router.get(`${this.path}/netPosition`,sessionCheck,this.netPosition);
     this.router.get(`${this.path}/getEventDetails`,sessionCheck,this.getEventDetails);
     this.router.get(`${this.path}/totalBetOnEvent`,sessionCheck,this.totalBetOnEvent);
@@ -142,6 +143,17 @@ class ContractController implements Controller {
     const userAddress = String(req.body.walletAddress);
     const volumeTraded: object = await contractHelper.volumeTraded(userAddress);
     return sendResponse(res, volumeTraded);
+  };
+  /**
+   * Retrieves the amount Invested by the user
+   * @param req 
+   * @param res 
+   * @returns 
+   */
+  private amountInvested = async (req: Request, res: Response) => {
+    const userAddress = String(req.body.walletAddress);
+    const amountInvested: object = await contractHelper.amountInvested(userAddress);
+    return sendResponse(res, amountInvested);
   };
   /**
    * Retrieves the profile and loss of the user

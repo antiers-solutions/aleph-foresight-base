@@ -408,14 +408,10 @@ class ContractHelper {
    */
   public volumeTraded = async (userAddress: string) => {
     try {
-      const query = {
-        userId: userAddress,
-        bidType: {
-            $nin:["withdraw", "claimed"]
-        }
-      }
       let volumeTraded = await mongoDataHelper.findAllSum(DATA_MODELS.Order,
-        query
+        {
+          userId: userAddress
+        }
       );
       if (volumeTraded == null) {
         return RESPONSE.DATA_NOT_FOUND;
@@ -435,6 +431,40 @@ class ContractHelper {
       return RESPONSE.INTERNAL_SERVER_ERROR;
     }
   };
+    /**
+   * helper function to get amount invested of logged in user
+   * @param res
+   * @param payload
+   * @returns
+   */
+    public amountInvested = async (userAddress: string) => {
+      try {
+        const query = {
+          userId: userAddress,
+          bidType: { $nin: ['withdraw', 'claimed'] },
+          result:{ $exists: false }
+        };
+
+        let amountInvested = await mongoDataHelper.findAllSum(DATA_MODELS.Order,
+          query
+        );
+
+        amountInvested = amountInvested?.volumeTraded;
+
+        if (amountInvested) {
+          return {
+            error: false,
+            data: { amountInvested },
+            status: STATUS_CODES.SUCCESS,
+            message: RESPONSE_MESSAGES.FETCH_EVENTSDATA_SUCCESS,
+          };
+        } else {
+          return RESPONSE.NOT_FOUND;
+        }
+      } catch (error) {
+        return RESPONSE.INTERNAL_SERVER_ERROR;
+      }
+    };
   /**
    * helper function to get profit and loss bear by logged in user
    * @param res
