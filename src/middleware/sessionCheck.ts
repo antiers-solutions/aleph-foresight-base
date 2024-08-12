@@ -26,7 +26,6 @@ export const sessionCheck = async (
       });
     }
     const value = JSON.parse(await redisHelper.client.get(token));
-    console.log("value ===>>>", value);
 
     const userAgentRequest = req.headers["user-agent"];
     if (value.userAgent == userAgentRequest && value?.signerAddress != `${process.env.ADMINADDRESS}`) {
