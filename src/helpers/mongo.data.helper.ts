@@ -763,6 +763,7 @@ class MongoDataHelper {
                      },
                   },
                   totalNoOfBet: { $size: '$matchingOrders' },
+                  
                },
             },
             {
@@ -775,6 +776,15 @@ class MongoDataHelper {
                         100,
                      ],
                   },
+                  noBetYet:{ 
+                     $cond: { 
+                        if: { 
+                           $eq:['$totalNoOfBet',0] 
+                        }, 
+                        then: true,
+                        else: false
+                     }
+                  } 
                },
             },
             {
@@ -801,6 +811,7 @@ class MongoDataHelper {
                   percentage: 1,
                   sign: 1,
                   totalNoOfBet: 1,
+                  noBetYet: 1,
                   percentageDifference: 1,
                },
             },
