@@ -41,7 +41,6 @@ export const sessionCheck = async (
       });
     }
   } catch (err) {
-    console.log(err);
     return sendResponse(res, {
       message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR,
       status: STATUS_CODES.INTERNALSERVER

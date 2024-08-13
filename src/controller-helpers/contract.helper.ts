@@ -259,7 +259,6 @@ class ContractHelper {
         return RESPONSE.NOT_FOUND;
       }
     } catch (error) {
-      console.log(error);
       return RESPONSE.INTERNAL_SERVER_ERROR;
     }
   };
@@ -548,17 +547,17 @@ class ContractHelper {
    */
   public payout = async (userAddress: string, eventId: string) => {
     try {
-      const userCreateEvnt = await mongoDataHelper.eventOdds(
+      const userCreateEvent = await mongoDataHelper.eventOdds(
         DATA_MODELS.Order,
         { userId: userAddress, eventId: eventId, result: 1 }
       );
-      if (!userCreateEvnt.length) {
+      if (!userCreateEvent.length) {
         return RESPONSE.NOT_FOUND;
       }
-      const platformFees = userCreateEvnt[0]?.platformFees;
-      const isSettlementYes = userCreateEvnt[0]?.settlement === "Yes";
-      const odds = userCreateEvnt[0]?.odds[isSettlementYes ? 0 : 1];
-      const amount = userCreateEvnt[0]?.amount;
+      const platformFees = userCreateEvent[0]?.platformFees;
+      const isSettlementYes = userCreateEvent[0]?.settlement === "Yes";
+      const odds = userCreateEvent[0]?.odds[isSettlementYes ? 0 : 1];
+      const amount = userCreateEvent[0]?.amount;
       const { grossPayout, netPayout } = calculatePayout(
         amount,
         odds,
